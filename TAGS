@@ -1,0 +1,14 @@
+
+cubebox.h,414
+class cube_box 14,227
+  double lasttime;cube_box::lasttime16,268
+  int wire;cube_box::wire17,287
+  double size;cube_box::size18,299
+  double speed;cube_box::speed19,314
+  cube_box(cube_box::cube_box20,330
+class cube_box 29,532
+  double lasttime;cube_box::lasttime35,655
+  int wire;cube_box::wire36,674
+  double size;cube_box::size37,686
+  double speed;cube_box::speed38,701
+#define v3f(47,837
