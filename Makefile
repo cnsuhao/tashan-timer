@@ -1,9 +1,5 @@
 
 include Makefile.FLTK
-#include ../fltk-1.3.3/makeinclude
-#VPATH = ..
-#vpath %.c .
-#vpath %.cxx .
 
 FLTKCONFIG   = ../fltk-1.3.3/fltk-config
 CXX          = $(shell $(FLTKCONFIG) --cxx) -g
@@ -13,10 +9,7 @@ LINKFLTK_GL  = $(shell $(FLTKCONFIG) --use-gl --use-glut --ldstaticflags ) -lGLU
 LINKFLTK_IMG = $(shell $(FLTKCONFIG) --use-images --ldstaticflags)
 LINKFLTK_ALL = $(shell $(FLTKCONFIG) --use-images --use-gl --use-glut --ldstaticflags)  -g -O0  `pkg-config --libs glu`
 .SUFFIXES: .cxx .h .fl .o shapedwindow$(EXEEXT)
-#OBJ_PATH = obj/
 
-#CPPFILES =main.cxx cubebox.cxx mainframe.cxx childframe.cxx taskframe.cxx about_panel.cxx flstring.c
-#OBJFILES =main.o cubebox.o mainframe.o childframe.o taskframe.o about_panel.o flstring.o
 
 BIN_PATH = .
 SRC_PATH := ./ ui/ utils/
@@ -50,7 +43,7 @@ $(OBJ_PATH)%.o:%.c
 
 #.PHONY: $(SUBDIRS)
 $(OBJFILES): $(SUBDIRS)
-#	$(CXX) -I.. $(CXXFLAGS) -c $(SRC) 
+
 
 .PHONY: testmk
 testmk:
@@ -58,20 +51,12 @@ testmk:
 	  make -C $$n; \
 	done
 
-#ui:
-#	@echo "enter ./$@"
-#	make -C $@
-
-#.PHONY: utils
-#utils:
-#	@echo "enter ./$@"
-#	make -C $@
 
 $(SUBDIRS):
 	for n in $(SUBDIRS); do \
 	  make -C $$n; \
 	done
-	#$(foreach x, $(SUBDIRS), $(make -C $$x))  
+
 
 main.o:$(SRC)
 	@echo "*** Compile $<..."
@@ -80,12 +65,6 @@ main.o:$(SRC)
 RM    = rm -f
 SHELL = /bin/sh
 .SILENT:
-
-# Executables
-#ALL = shapedwindow$(EXEEXT)
-
-# default target -- build everything
-#default all: $(ALL)
 
 # HOW TO COMPILE
 $(OBJ_PATH)%.o:%.cxx
@@ -96,15 +75,6 @@ $(OBJ_PATH)%.o:%.c
 	@echo "*** Compile c $<..."
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-#$(OBJ_PATH).cxx.o obj/.o:
-#	@echo "*** Compile2 $<..."
-#	$(CXX) -I.. $(CXXFLAGS) -c $< -o $(OBJ_PATH)$@
-
-#obj/.cxx.o obj/.c.o:
-#	@echo "*** Compile $<..."
-#	@echo $(CXXFLAGS)
-#	$(CXX) -I.. $(CXXFLAGS) -c $< -o $(OBJ_PATH)$@
-
 cscope:
 	-rm cscope.files
 	-rm cscope.in.out
@@ -114,10 +84,7 @@ cscope:
 	cscope -q -I /home/lixing/include -I . -I /usr/include -R -b -i cscope.files
 	export CSCOPE_DB=./cscope.out:/run/media/lixing/works/src/gui/fltk-1.3.3/cscope.out 
 
-# HOW TO LINK
-#.o$(EXEEXT):
-#	@echo "*** Linking $@..."
-#	$(CXX) $< $(LINKFLTK_ALL) -o $@
+
 .PHONY: clean  
 # clean everything
 clean:

@@ -44,8 +44,8 @@ bool CTskTimerMgr::CanDelTsk(IN CTskTimer* pTskTimerEntry)
 		{
 			break;
 		}
-
-		//ÔÚ×ÓÈÎÎñÁ´±íÀï²é
+        
+		//åœ¨å­ä»»åŠ¡é“¾è¡¨é‡ŒæŸ¥
 		bCan = CTskTimerMgr::CanDelTsk(p->m_pChildsEntry);
 		if(!bCan)
 		{
@@ -62,6 +62,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
  
 	TCHAR** vtDays=0;
 	TCHAR** vtHours=0;
+	
 #if 0
 	CTimeSpan ts;
 	CTime   tmNow( 0 ),ct(0) ;
@@ -74,22 +75,22 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		return 0;
 	}
 
-	//¸ù¾İ²»Í¬µÄÄÖÖÓÀàĞÍ£¬Éú³É¼ÆÊ±Æ÷µÄÊ±¼ä²ÎÊı
+	//æ ¹æ®ä¸åŒçš„é—¹é’Ÿç±»å‹ï¼Œç”Ÿæˆè®¡æ—¶å™¨çš„æ—¶é—´å‚æ•°
 	int yTmp,mTmp,dTmp,hTmp,minuTmp;
 	switch(pTime->chType)
 	{
 	case 0:
-		//¼´Ê±ÄÖÖÓ
-		nElapse=0;//Á¢¼´Ö´ĞĞ
+		//å³æ—¶é—¹é’Ÿ
+		nElapse=0;//ç«‹å³æ‰§è¡Œ
 		break;
 	case 1:
-		//ÑôÀúÈÕÆÚÄÖÖÓ
-		//²ÎÊı¸ñÊ½ÀàËÆÓÚ  2013.2.24.13:05:11 £¬ÕâÀïÎÒĞèÒª¸ù¾İµ±Ç°Ê±¼ä£¬Ëã³ö nElapse
+		//é˜³å†æ—¥æœŸé—¹é’Ÿ
+		//å‚æ•°æ ¼å¼ç±»ä¼¼äº  2013.2.24.13:05:11 ï¼Œè¿™é‡Œæˆ‘éœ€è¦æ ¹æ®å½“å‰æ—¶é—´ï¼Œç®—å‡º nElapse
 		y=nsYLX::CUtil::Split(OUT vtDays, IN 3, IN  pTime->m_pParam0, IN _T("."));
 		if (y!=3)
 		{
 			nsYLX::CUtil::ClearMemForSplit(vtDays,3);
-			return -1;//¸ñÊ½²»¶ÔÑ½
+			return -1;//æ ¼å¼ä¸å¯¹å‘€
 		}
 		y = _ttoi(vtDays[0]);
 		m = _ttoi(vtDays[1]);
@@ -97,26 +98,26 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		nsYLX::CUtil::ClearMemForSplit(vtDays,3);
 		if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
 		{
-			//ÄÖÖÓ²»ÔÚ½ñÌì£¬ËùÒÔ²»×öÈÎºÎ´¦Àí£¬ºÇºÇ
+			//é—¹é’Ÿä¸åœ¨ä»Šå¤©ï¼Œæ‰€ä»¥ä¸åšä»»ä½•å¤„ç†ï¼Œå‘µå‘µ
 			return -1;
 		}
 		break;
 	case 2:
-		//ÒõÀúÈÕÆÚÄÖÖÓ
+		//é˜´å†æ—¥æœŸé—¹é’Ÿ
 
-		//²ÎÊı¸ñÊ½ÀàËÆÓÚ  2013.2.24.13:05:11 £¬ÕâÀïÎÒĞèÒª¸ù¾İµ±Ç°Ê±¼ä£¬Ëã³ö nElapse
+		//å‚æ•°æ ¼å¼ç±»ä¼¼äº  2013.2.24.13:05:11 ï¼Œè¿™é‡Œæˆ‘éœ€è¦æ ¹æ®å½“å‰æ—¶é—´ï¼Œç®—å‡º nElapse
 		Y=nsYLX::CUtil::Split(OUT vtDays, IN 3, IN  pTime->m_pParam0, IN _T("."));
 		if (Y!=3)
 		{
 			nsYLX::CUtil::ClearMemForSplit(vtDays,3);
-			return -1;//¸ñÊ½²»¶ÔÑ½
+			return -1;//æ ¼å¼ä¸å¯¹å‘€
 		}
 		Y = _ttoi(vtDays[0]);
 		M = _ttoi(vtDays[1]);
 		D = _ttoi(vtDays[2]);
 		nsYLX::CUtil::ClearMemForSplit(vtDays,3);
 
-		//Ê×ÏÈ½«ÒõÀú×ª»»³ÉÑôÀú
+		//é¦–å…ˆå°†é˜´å†è½¬æ¢æˆé˜³å†
 		if (!nsYLX::CCalendar::GetSolarDate( Y, M-1, D, y, m, d ))
 		{
 			break;
@@ -124,7 +125,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 
 		if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
 		{
-			//ÄÖÖÓ²»ÔÚ½ñÌì£¬ËùÒÔ²»×öÈÎºÎ´¦Àí£¬ºÇºÇ
+			//é—¹é’Ÿä¸åœ¨ä»Šå¤©ï¼Œæ‰€ä»¥ä¸åšä»»ä½•å¤„ç†ï¼Œå‘µå‘µ
 			return -1;
 		}
 		break;
@@ -136,25 +137,25 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 				int _day;
 			} _lunFestival[]=
 			{
-				{1,1}//"0101 ´º½Ú",
-				,{1,15}//"0115 ÔªÏü½Ú",
-				,{5,5}//"0505 ¶ËÎç½Ú",
-				,{7,7}//"0707 ÆßÏ¦ÇéÈË½Ú",
-				,{7,15}//"0715 ÖĞÔª½Ú",
-				,{8,15}//"0815 ÖĞÇï½Ú",
-				,{9,9}//"0909 ÖØÑô½Ú",
-				,{12,8}//"1208 À°°Ë½Ú",
-				,{12,24}//"1224 Ğ¡Äê",
-				,{1,0}//"0100 ³ıÏ¦"
+				{1,1}//"0101 æ˜¥èŠ‚",
+				,{1,15}//"0115 å…ƒå®µèŠ‚",
+				,{5,5}//"0505 ç«¯åˆèŠ‚",
+				,{7,7}//"0707 ä¸ƒå¤•æƒ…äººèŠ‚",
+				,{7,15}//"0715 ä¸­å…ƒèŠ‚",
+				,{8,15}//"0815 ä¸­ç§‹èŠ‚",
+				,{9,9}//"0909 é‡é˜³èŠ‚",
+				,{12,8}//"1208 è…Šå…«èŠ‚",
+				,{12,24}//"1224 å°å¹´",
+				,{1,0}//"0100 é™¤å¤•"
 			};
 
-			//Å©Àú½ÚÈÕÄÖÖÓ ,²ÎÊı¸ñÊ½ x-x
-			//Ê×ÏÈ½«ÒõÀú×ª»»³ÉÑôÀú
+			//å†œå†èŠ‚æ—¥é—¹é’Ÿ ,å‚æ•°æ ¼å¼ x-x
+			//é¦–å…ˆå°†é˜´å†è½¬æ¢æˆé˜³å†
 			Y=nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pTime->m_pParam0, IN _T("-"));
 			if (Y!=2)
 			{
 				nsYLX::CUtil::ClearMemForSplit(vtDays,2);
-				return -1;//¸ñÊ½²»¶ÔÑ½
+				return -1;//æ ¼å¼ä¸å¯¹å‘€
 			}
 			Y = _ttoi(vtDays[1]);
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
@@ -166,7 +167,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 
 			if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
 			{
-				//½ñÌì²»¹ı½Ú£¬ËùÒÔ²»×öÈÎºÎ´¦Àí£¬ºÇºÇ
+				//ä»Šå¤©ä¸è¿‡èŠ‚ï¼Œæ‰€ä»¥ä¸åšä»»ä½•å¤„ç†ï¼Œå‘µå‘µ
 				return -1;
 			}
 		}
@@ -174,86 +175,86 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		break;
 	case 11:
 		{
-			//ÑôÀú½ÚÈÕÄÖÖÓ
+			//é˜³å†èŠ‚æ—¥é—¹é’Ÿ
 			struct lunStru
 			{
 				int _mon;
 				int _day;
 			} _SolarFestival[]=
 			{ 
-				{1,1}//Ôªµ©,
-				,{2,14}//ÇéÈË½Ú
-				,{3,3}//°®¶úÈÕ
-				,{3,5}//ÇàÄêÖ¾Ô¸Õß·şÎñÈÕ
-				,{3,7}//Å®Éú½Ú
-				,{3,8}//¸¾Å®½Ú
-				,{3,12}//Ö²Ê÷½Ú
-				,{3,14}//°×É«ÇéÈË½Ú,¹ú¼Ê¾¯²ìÈÕ
-				,{3,15}//Ïû·ÑÕßÈ¨ÒæÈÕ
-				,{3,21}//ÊÀ½çÉ­ÁÖÈÕ,Ë¯ÃßÈÕ
-				,{3,22}//ÊÀ½çË®ÈÕ
-				,{3,23}//ÊÀ½çÆøÏóÈÕ
-				,{3,24}//ÊÀ½ç·ÀÖÎ½áºË²¡ÈÕ
-				,{4,1}//ÓŞÈË½Ú
-				,{4,4}//ÇåÃ÷½Ú
-				,{4,7}//ÊÀ½çÎÀÉúÈÕ
-				,{4,22}//ÊÀ½çµØÇòÈÕ
-				,{4,26}//ÊÀ½çÖªÊ¶²úÈ¨ÈÕ
-				,{5,1}//ÀÍ¶¯½Ú
-				,{5,3}//ÊÀ½çÏø´­ÈÕ
-				,{5,4}//ÇàÄê½Ú
-				,{5,8}//ÊÀ½çºìÊ®×ÖÈÕ,ÊÀ½çÎ¢Ğ¦ÈÕ
-				,{5,12}//»¤Ê¿½Ú
-				,{5,15}//¹ú¼Ê¼ÒÍ¥ÈÕ
-				,{5,31}//ÊÀ½çÎŞÑÌÈÕ
-				,{6,1}//¶ùÍ¯½Ú
-				,{6,5}//ÊÀ½ç»·¾³ÈÕ
-				,{6,6}//È«¹ú°®ÑÛÈÕ
-				,{6,11}//ÖĞ¹úÈË¿ÚÈÕ
-				,{6,17}//ÊÀ½ç·ÀÖ¹»ÄÄ®»¯ºÍ¸ÉºµÈÕ
-				,{6,20}//ÊÀ½çÄÑÃñÈÕ
-				,{6,23}//¹ú¼Ê°ÂÁÖÆ¥¿ËÈÕ
-				,{6,25}//È«¹úÍÁµØÈÕ
-				,{6,26}//¹ú¼Ê½û¶¾ÈÕ
-				,{7,1}//½¨µ³½Ú Ïã¸Û»Ø¹é¼ÍÄî
-				,{7,7}//¿¹ÈÕÕ½Õù¼ÍÄîÈÕ
-				,{7,11}//ÊÀ½çÈË¿ÚÈÕ
-				,{8,1}//½¨¾ü½Ú
-				,{8,6}//¹ú¼ÊµçÓ°½Ú  
-				,{8,8}//ÖĞ¹úÄĞ×Ó½Ú
-				,{8,12}//¹ú¼ÊÇàÄê½Ú
-				,{8,15}//ÈÕ±¾Í¶½µÈÕ
-				,{9,3}//ÖĞ¹ú¿¹ÈÕÕ½ÕùÊ¤Àû¼ÍÄîÈÕ
-				,{9,8}//¹ú¼ÊÉ¨Ã¤ÈÕ
-				,{9,9}//Ã«Ï¯ÊÅÊÀ¼ÍÄî
-				,{9,10}//½ÌÊ¦½Ú
-				,{9,16}//ÖĞ¹úÄÔ½¡¿µÈÕ,¹ú¼Ê³ôÑõ²ã±£»¤ÈÕ
-				,{9,18}//¾Å¡¤Ò»°ËÊÂ±ä¼ÍÄîÈÕ,ÖĞ¹ú¹ú³ÜÈÕ
-				,{9,20}//È«¹ú°®ÑÀÈÕ
-				,{9,21}//ÊÀ½çÍ£»ğÈÕ
-				,{9,27}//ÊÀ½çÂÃÓÎÈÕ
-				,{9,28}//¿××Óµ®³½
-				,{10,1}//¹úÇì½Ú
-				,{10,6}//ÀÏÈË½Ú
-				,{10,16}//ÊÀ½çÁ¸Ê³ÈÕ
-				,{10,17}//¹ú¼ÊÏû³ıÆ¶À§ÈÕ
-				,{10,24}//ÁªºÏ¹úÈÕ
-				,{10,31}//ÍòÊ¥½Ú
-				,{11,8}//ÖĞ¹ú¼ÇÕß½Ú
-				,{11,12}//ËïÖĞÉ½µ®³½
-				,{12,1}//°¬×Ì²¡ÈÕ 
-				,{12,3}//ÊÀ½ç²Ğ¼²ÈËÈÕ
-				,{12,13}//ÄÏ¾©´óÍÀÉ±µ¿ÄîÈÕ
-				,{12,20}//°ÄÃÅ»Ø¹é¼ÍÄî
-				,{12,25}//Ê¥µ®½Ú
-				,{12,26}//Ã«Ï¯µ®³½ 
+				{1,1}//å…ƒæ—¦,
+				,{2,14}//æƒ…äººèŠ‚
+				,{3,3}//çˆ±è€³æ—¥
+				,{3,5}//é’å¹´å¿—æ„¿è€…æœåŠ¡æ—¥
+				,{3,7}//å¥³ç”ŸèŠ‚
+				,{3,8}//å¦‡å¥³èŠ‚
+				,{3,12}//æ¤æ ‘èŠ‚
+				,{3,14}//ç™½è‰²æƒ…äººèŠ‚,å›½é™…è­¦å¯Ÿæ—¥
+				,{3,15}//æ¶ˆè´¹è€…æƒç›Šæ—¥
+				,{3,21}//ä¸–ç•Œæ£®æ—æ—¥,ç¡çœ æ—¥
+				,{3,22}//ä¸–ç•Œæ°´æ—¥
+				,{3,23}//ä¸–ç•Œæ°”è±¡æ—¥
+				,{3,24}//ä¸–ç•Œé˜²æ²»ç»“æ ¸ç—…æ—¥
+				,{4,1}//æ„šäººèŠ‚
+				,{4,4}//æ¸…æ˜èŠ‚
+				,{4,7}//ä¸–ç•Œå«ç”Ÿæ—¥
+				,{4,22}//ä¸–ç•Œåœ°çƒæ—¥
+				,{4,26}//ä¸–ç•ŒçŸ¥è¯†äº§æƒæ—¥
+				,{5,1}//åŠ³åŠ¨èŠ‚
+				,{5,3}//ä¸–ç•Œå“®å–˜æ—¥
+				,{5,4}//é’å¹´èŠ‚
+				,{5,8}//ä¸–ç•Œçº¢åå­—æ—¥,ä¸–ç•Œå¾®ç¬‘æ—¥
+				,{5,12}//æŠ¤å£«èŠ‚
+				,{5,15}//å›½é™…å®¶åº­æ—¥
+				,{5,31}//ä¸–ç•Œæ— çƒŸæ—¥
+				,{6,1}//å„¿ç«¥èŠ‚
+				,{6,5}//ä¸–ç•Œç¯å¢ƒæ—¥
+				,{6,6}//å…¨å›½çˆ±çœ¼æ—¥
+				,{6,11}//ä¸­å›½äººå£æ—¥
+				,{6,17}//ä¸–ç•Œé˜²æ­¢è’æ¼ åŒ–å’Œå¹²æ—±æ—¥
+				,{6,20}//ä¸–ç•Œéš¾æ°‘æ—¥
+				,{6,23}//å›½é™…å¥¥æ—åŒ¹å…‹æ—¥
+				,{6,25}//å…¨å›½åœŸåœ°æ—¥
+				,{6,26}//å›½é™…ç¦æ¯’æ—¥
+				,{7,1}//å»ºå…šèŠ‚ é¦™æ¸¯å›å½’çºªå¿µ
+				,{7,7}//æŠ—æ—¥æˆ˜äº‰çºªå¿µæ—¥
+				,{7,11}//ä¸–ç•Œäººå£æ—¥
+				,{8,1}//å»ºå†›èŠ‚
+				,{8,6}//å›½é™…ç”µå½±èŠ‚  
+				,{8,8}//ä¸­å›½ç”·å­èŠ‚
+				,{8,12}//å›½é™…é’å¹´èŠ‚
+				,{8,15}//æ—¥æœ¬æŠ•é™æ—¥
+				,{9,3}//ä¸­å›½æŠ—æ—¥æˆ˜äº‰èƒœåˆ©çºªå¿µæ—¥
+				,{9,8}//å›½é™…æ‰«ç›²æ—¥
+				,{9,9}//æ¯›å¸­é€ä¸–çºªå¿µ
+				,{9,10}//æ•™å¸ˆèŠ‚
+				,{9,16}//ä¸­å›½è„‘å¥åº·æ—¥,å›½é™…è‡­æ°§å±‚ä¿æŠ¤æ—¥
+				,{9,18}//ä¹Â·ä¸€å…«äº‹å˜çºªå¿µæ—¥,ä¸­å›½å›½è€»æ—¥
+				,{9,20}//å…¨å›½çˆ±ç‰™æ—¥
+				,{9,21}//ä¸–ç•Œåœç«æ—¥
+				,{9,27}//ä¸–ç•Œæ—…æ¸¸æ—¥
+				,{9,28}//å­”å­è¯è¾°
+				,{10,1}//å›½åº†èŠ‚
+				,{10,6}//è€äººèŠ‚
+				,{10,16}//ä¸–ç•Œç²®é£Ÿæ—¥
+				,{10,17}//å›½é™…æ¶ˆé™¤è´«å›°æ—¥
+				,{10,24}//è”åˆå›½æ—¥
+				,{10,31}//ä¸‡åœ£èŠ‚
+				,{11,8}//ä¸­å›½è®°è€…èŠ‚
+				,{11,12}//å­™ä¸­å±±è¯è¾°
+				,{12,1}//è‰¾æ»‹ç—…æ—¥ 
+				,{12,3}//ä¸–ç•Œæ®‹ç–¾äººæ—¥
+				,{12,13}//å—äº¬å¤§å± æ€æ‚¼å¿µæ—¥
+				,{12,20}//æ¾³é—¨å›å½’çºªå¿µ
+				,{12,25}//åœ£è¯èŠ‚
+				,{12,26}//æ¯›å¸­è¯è¾° 
 			};
 
 			Y=nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pTime->m_pParam0, IN _T("-"));
 			if (Y!=2)
 			{
 				nsYLX::CUtil::ClearMemForSplit(vtDays,2);
-				return -1;//¸ñÊ½²»¶ÔÑ½
+				return -1;//æ ¼å¼ä¸å¯¹å‘€
 			}
 			Y = _ttoi(vtDays[1]);
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
@@ -263,18 +264,18 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			dTmp = _SolarFestival[Y]._day;
 			if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
 			{
-				//½ñÌì²»ÊÇ½ÚÈÕ£¬ËùÒÔ²»×öÈÎºÎ´¦Àí£¬ºÇºÇ
+				//ä»Šå¤©ä¸æ˜¯èŠ‚æ—¥ï¼Œæ‰€ä»¥ä¸åšä»»ä½•å¤„ç†ï¼Œå‘µå‘µ
 				return -1;
 			}
 		}
 		break;
 	case 12:
-		//Å©Àú½ÚÆøÄÖÖÓ
+		//å†œå†èŠ‚æ°”é—¹é’Ÿ
 		Y=nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pTime->m_pParam0, IN _T("-"));
 		if (Y!=2)
 		{
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
-			return -1;//¸ñÊ½²»¶ÔÑ½
+			return -1;//æ ¼å¼ä¸å¯¹å‘€
 		}
 		Y = _ttoi(vtDays[1]);
 		nsYLX::CUtil::ClearMemForSplit(vtDays,2);
@@ -283,18 +284,18 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 
 		if (mTmp != tmNow.GetMonth() &&dTmp != tmNow.GetDay())
 		{
-			//½ñÌì²»ÊÇ½ÚÆø£¬ËùÒÔ²»×öÈÎºÎ´¦Àí£¬ºÇºÇ
+			//ä»Šå¤©ä¸æ˜¯èŠ‚æ°”ï¼Œæ‰€ä»¥ä¸åšä»»ä½•å¤„ç†ï¼Œå‘µå‘µ
 			return -1;
 		}
 		break;
 	case 13:
-		//ĞÇÆÚÄÖÖÓ
+		//æ˜ŸæœŸé—¹é’Ÿ
 		{
 			Y=nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pTime->m_pParam0, IN _T("-"));
 			if (Y!=2)
 			{
 				nsYLX::CUtil::ClearMemForSplit(vtDays,2);
-				return -1;//¸ñÊ½²»¶ÔÑ½
+				return -1;//æ ¼å¼ä¸å¯¹å‘€
 			} 
 			h=nsYLX::CUtil::Split(OUT vtHours, IN 7, IN  vtDays[1], IN _T(","));
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
@@ -304,17 +305,17 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			int i=0;
 			for (  i=0;i<h;i++)
 			{
-				int nWeekDay = _ttoi(vtHours[i]);//ÖÜ¼¸
+				int nWeekDay = _ttoi(vtHours[i]);//å‘¨å‡ 
 				if (nTodayWeek == nWeekDay)
 				{
-					//¿ÉÄÜÓĞºÜ¶àĞÇÆÚ£¬µ«ÎÒÖ»´¦ÀíÊôÓÚ½ñÌìµÄ¶¨Ê±Æ÷ÈÎÎñ¡£
+					//å¯èƒ½æœ‰å¾ˆå¤šæ˜ŸæœŸï¼Œä½†æˆ‘åªå¤„ç†å±äºä»Šå¤©çš„å®šæ—¶å™¨ä»»åŠ¡ã€‚
 					break;
 				} 
 			}
 
 			if (i == h)
 			{
-				// Ã»ÕÒµ½µ±ÌìµÄ¼ÆÊ±ÈÎÎñ£¬
+				// æ²¡æ‰¾åˆ°å½“å¤©çš„è®¡æ—¶ä»»åŠ¡ï¼Œ
 				nsYLX::CUtil::ClearMemForSplit(vtHours,h);
 				return -1;
 			}
@@ -330,7 +331,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		if (h!=3)
 		{
 			nsYLX::CUtil::ClearMemForSplit(vtHours,3);
-			return -1;//¸ñÊ½²»¶ÔÑ½
+			return -1;//æ ¼å¼ä¸å¯¹å‘€
 		}
 
 		h = _ttoi(vtHours[0]);
@@ -363,7 +364,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		llElapse = ts.GetTotalSeconds();
 		if (llElapse<0)
 		{
-			//¹ıÆÚÁËµÄ¶¨Ê±Æ÷£¬±¾Ó¦²»×ö´¦Àí£¬µ«¿¼ÂÇµ½ÖÜÆÚÑ­»·£¬²»ÄÜ¼òµ¥·ÏÆú
+			//è¿‡æœŸäº†çš„å®šæ—¶å™¨ï¼Œæœ¬åº”ä¸åšå¤„ç†ï¼Œä½†è€ƒè™‘åˆ°å‘¨æœŸå¾ªç¯ï¼Œä¸èƒ½ç®€å•åºŸå¼ƒ
 			//if (nFreqTimes > 0)
 			{
 
@@ -399,7 +400,7 @@ LONGLONG CTskTimerMgr::GetOffsetEspase(class CParams* pOffset)
 		{
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 			ATLASSERT(0);
-			break;//¸ñÊ½²»¶ÔÑ½
+			break;//æ ¼å¼ä¸å¯¹å‘€
 		}
 
 		d = _ttoi(vtDays[0]);
@@ -409,7 +410,7 @@ LONGLONG CTskTimerMgr::GetOffsetEspase(class CParams* pOffset)
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 			nsYLX::CUtil::ClearMemForSplit(vtHours,3);
 			ATLASSERT(0);
-			break;//¸ñÊ½²»¶ÔÑ½
+			break;//æ ¼å¼ä¸å¯¹å‘€
 		}
 		h = _ttoi(vtHours[0]);
 		minu = _ttoi(vtHours[1]);
@@ -466,7 +467,7 @@ int CTskTimerMgr::GetDaysOfCurrMonth(int nMonth, int nYear)
 bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMin, int* pS, int nOffset)
 {
 	*pS    += nOffset;
-	//±íÊ¾ÃëÖÓ£¬ÊÇ´Ó 0 µ½ 59 µÄÕûÊı
+	//è¡¨ç¤ºç§’é’Ÿï¼Œæ˜¯ä» 0 åˆ° 59 çš„æ•´æ•°
 	if(*pS < 0)
 	{
 		*pMin   += (*pS)/60;
@@ -480,7 +481,7 @@ bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMi
 		return CTskTimerMgr::GetDateNxtSecs(pY,        pMon,       pD,                                    pH,             pMin,   pS,    nOffset);
 	}
 
-	//±íÊ¾·ÖÖÓ£¬ÊÇ´Ó 0 µ½ 59 µÄÕûÊı
+	//è¡¨ç¤ºåˆ†é’Ÿï¼Œæ˜¯ä» 0 åˆ° 59 çš„æ•´æ•°
 	if (*pMin < 0)
 	{
 		*pH   += (*pMin)/60;
@@ -493,7 +494,7 @@ bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMi
 		return CTskTimerMgr::GetDateNxtSecs(pY,        pMon,       pD,                                    pH,             pMin,   pS,    nOffset);
 	}
 
-	//±íÊ¾Ğ¡Ê±£¬ÊÇ´Ó 0 µ½ 23 µÄÕûÊı
+	//è¡¨ç¤ºå°æ—¶ï¼Œæ˜¯ä» 0 åˆ° 23 çš„æ•´æ•°
 	if(*pH < 0)
 	{
 		*pD   += (*pH)/24;
@@ -506,7 +507,7 @@ bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMi
 		return CTskTimerMgr::GetDateNxtSecs(pY,        pMon,       pD,                                    pH,             pMin,   pS,    nOffset);
 	}
 
-	//±íÊ¾ÈÕÆÚ£¬ÊÇ´Ó 1 µ½ 31 Ö®¼äµÄÕûÊı
+	//è¡¨ç¤ºæ—¥æœŸï¼Œæ˜¯ä» 1 åˆ° 31 ä¹‹é—´çš„æ•´æ•°
 	if(*pD < 0)
 	{
 		*pMon=(*pMon)--;
@@ -519,7 +520,7 @@ bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMi
 		return CTskTimerMgr::GetDateNxtSecs(pY,        pMon,       pD,                                    pH,             pMin,   pS,    nOffset);
 	}
 
-	//±íÊ¾µÄÔÂ·İ£¬ÊÇ´Ó 0 µ½ 11 Ö®¼äµÄÕûÊı
+	//è¡¨ç¤ºçš„æœˆä»½ï¼Œæ˜¯ä» 0 åˆ° 11 ä¹‹é—´çš„æ•´æ•°
 	if(*pMon < 0)
 	{
 		*pY=(*pY)--;
@@ -539,7 +540,7 @@ bool CTskTimerMgr::GetDateNxtSecs(int* pY, int* pMon, int* pD, int* pH, int* pMi
 	return true;
 }
 
-//d<0±íÊ¾»ñÈ¡Ö¸¶¨ÈÕÆÚµÄÇ°dÌìµÄÈÕÆÚ,mÒÔ1ÎªÏÂ±ê£¬×î´óÖµ12±íÊ¾µÚ12¸öÔÂ,dÍ¬ÑùÒÔ1ÎªÏÂ±ê£¬×î´óÖµ31±íÊ¾¸ÃÔÂµÄµÚ31Ìì
+//d<0è¡¨ç¤ºè·å–æŒ‡å®šæ—¥æœŸçš„å‰då¤©çš„æ—¥æœŸ,mä»¥1ä¸ºä¸‹æ ‡ï¼Œæœ€å¤§å€¼12è¡¨ç¤ºç¬¬12ä¸ªæœˆ,dåŒæ ·ä»¥1ä¸ºä¸‹æ ‡ï¼Œæœ€å¤§å€¼31è¡¨ç¤ºè¯¥æœˆçš„ç¬¬31å¤©
 bool CTskTimerMgr::GetDateNxtDays(int y,int m,int d,int& newY,int& newM,int& newD,int nOffsetDays)
 {
 	newY = y;
@@ -548,7 +549,7 @@ bool CTskTimerMgr::GetDateNxtDays(int y,int m,int d,int& newY,int& newM,int& new
 
 	if (newD<1)
 	{
-		//´ËÊ±nOffsetDaysÒ»¶¨Ğ¡ÓÚ0£¬±íÊ¾Ï£Íû»ñµÃÇ°nOffsetDaysÌìÈÕÆÚ
+		//æ­¤æ—¶nOffsetDaysä¸€å®šå°äº0ï¼Œè¡¨ç¤ºå¸Œæœ›è·å¾—å‰nOffsetDayså¤©æ—¥æœŸ
 		return CTskTimerMgr::GetDateNxtDays(  y,  m-1,  GetDaysOfCurrMonth(m-1,y),  newY,  newM,  newD,  nOffsetDays-d);
 	} 
 
@@ -560,7 +561,7 @@ bool CTskTimerMgr::GetDateNxtDays(int y,int m,int d,int& newY,int& newM,int& new
 	int nDaysCurMonth = GetDaysOfCurrMonth(m,y);
 	if (newD > nDaysCurMonth)
 	{
-		//´ËÊ±nOffsetDaysÒ»¶¨´óÓÚ0£¬±íÊ¾Ï£Íû»ñµÃºónOffsetDaysÌìÈÕÆÚ
+		//æ­¤æ—¶nOffsetDaysä¸€å®šå¤§äº0ï¼Œè¡¨ç¤ºå¸Œæœ›è·å¾—ånOffsetDayså¤©æ—¥æœŸ
 		return CTskTimerMgr::GetDateNxtDays(  y,  m+1,  0,  newY,  newM,  newD,  newD-nDaysCurMonth);
 	}
 
@@ -572,7 +573,7 @@ bool CTskTimerMgr::GetDateNxtDays(int y,int m,int d,int& newY,int& newM,int& new
 	return true;
 }//
 
-// llTotalSecsOffsetNow ¾àÀëÏÖÔÚµÄ×ÜÃëÊı
+// llTotalSecsOffsetNow è·ç¦»ç°åœ¨çš„æ€»ç§’æ•°
 LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsOffsetNow)
 {
 	if (!pFreq)
@@ -592,7 +593,7 @@ LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsO
 
 	switch(pFreq->chType)
 	{
-	case 0://xÔÂ
+	case 0://xæœˆ
 		{
 			llElapse =_ttoi(pFreq->m_pParam1);
 			int nTotalDays = 0;
@@ -600,11 +601,11 @@ LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsO
 			{
 				nTotalDays += nsYLX::CCalendar::GetSolarMonthDays( tmNow.GetYear(), (tmNow.GetMonth()+2+iMon)%12);
 			}
-			llElapse  = nTotalDays * 24 * 3600 ;//»»Ëã³É Ãë
+			llElapse  = nTotalDays * 24 * 3600 ;//æ¢ç®—æˆ ç§’
 		}
 		break;
 	case 1:
-		//xÈÕ.xÊ±:x·Ö:xÃë
+		//xæ—¥.xæ—¶:xåˆ†:xç§’
 		{ 
 			int yTmp=0,mTmp=0,dTmp=0,hTmp=0,minuTmp=0,secTmp=0;
 
@@ -615,7 +616,7 @@ LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsO
 			if (yTmp!=2)
 			{
 				nsYLX::CUtil::ClearMemForSplit(vtDays,2);
-				return false;//¸ñÊ½²»¶ÔÑ½
+				return false;//æ ¼å¼ä¸å¯¹å‘€
 			}
 
 			dTmp = _ttoi(vtDays[0]);
@@ -624,7 +625,7 @@ LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsO
 			{
 				nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 				nsYLX::CUtil::ClearMemForSplit(vtHours,3);
-				return false;//¸ñÊ½²»¶ÔÑ½
+				return false;//æ ¼å¼ä¸å¯¹å‘€
 			}
 			hTmp    = _ttoi(vtHours[0]);
 			minuTmp = _ttoi(vtHours[1]);
@@ -633,7 +634,7 @@ LONGLONG CTskTimerMgr::GetFreqEspase(CParams* pFreq, const LONGLONG llTotalSecsO
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 			nsYLX::CUtil::ClearMemForSplit(vtHours,3);
 
-			llElapse  = ((dTmp * 24 + hTmp)*60 + minuTmp) * 60 +secTmp;//»»Ëã³É Ãë
+			llElapse  = ((dTmp * 24 + hTmp)*60 + minuTmp) * 60 +secTmp;//æ¢ç®—æˆ ç§’
 
 		}
 		break;

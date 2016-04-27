@@ -39,7 +39,7 @@ CTskTimerMgr::~CTskTimerMgr(void)
 	} 
 }
 
-//Çå³ýËùÓÐ×Ó¶¨Ê±Æ÷
+//æ¸…é™¤æ‰€æœ‰å­å®šæ—¶å™¨
 void CTskTimerMgr::ClearAllTimers(CTskTimer* pTskTimer)
 {
 	if (!pTskTimer)
@@ -49,7 +49,7 @@ void CTskTimerMgr::ClearAllTimers(CTskTimer* pTskTimer)
 
 	if (pTskTimer->m_nId != -1)
 	{
-		//·Ç¿ÕÍ·½áµã
+		//éžç©ºå¤´ç»“ç‚¹
 		//::KillTimer(m_hOwnWnd, pTskTimer->m_nId); 
 		ClearAllTimers(pTskTimer->m_pChildsEntry);
 	}
@@ -96,7 +96,7 @@ bool CTskTimerMgr::getTskTimerById(IN CTskTimer* pTskTimerEntry, IN int nId, OUT
 			break;
 		}
 
-		//ÔÚ×ÓÈÎÎñÁ´±íÀï²é
+		//åœ¨å­ä»»åŠ¡é“¾è¡¨é‡ŒæŸ¥
 		if (getTskTimerById(p->m_pChildsEntry,  nId, OUT pTskTimer))
 		{
 			bFound = true;
@@ -106,7 +106,7 @@ bool CTskTimerMgr::getTskTimerById(IN CTskTimer* pTskTimerEntry, IN int nId, OUT
 
 	if (!bFound)
 	{
-		//Ã»ÕÒµ½µÄ»°£¬ÔÚ×ÓÈÎÎñÁ´±íÀï²é
+		//æ²¡æ‰¾åˆ°çš„è¯ï¼Œåœ¨å­ä»»åŠ¡é“¾è¡¨é‡ŒæŸ¥
 		if (getTskTimerById(pTskTimerEntry->m_pChildsEntry,  nId, OUT pTskTimer))
 		{
 			return bFound;
@@ -123,10 +123,10 @@ bool CTskTimerMgr::DelTskTimerById(int nId)
 	{
 		return bRtn;
 	}
-	//É¾³ýÈÎÎñÇ°£¬ÏÈÉ¾³ýµôÈÎÎñÖÐµÄ¼ÆÊ±Æ÷
+	//åˆ é™¤ä»»åŠ¡å‰ï¼Œå…ˆåˆ é™¤æŽ‰ä»»åŠ¡ä¸­çš„è®¡æ—¶å™¨
 	ClearAllTimers(pTskTimer);
 
-	//´ÓÁ´±íÖÐÕª³ý
+	//ä»Žé“¾è¡¨ä¸­æ‘˜é™¤
 	CTskTimer::Del(pTskTimer); 
 	
 	delete pTskTimer;
@@ -175,213 +175,7 @@ bool CTskTimerMgr::StartSingleTimerTsk(CTskTimer* p)
 	{
 		return false;
 	}
-#if 0
-	CTimeSpan ts;
-	CTime   tmNow( 0 ),ct(0) ;
-	tmNow = CTime::GetCurrentTime();
-	int Y=0,M=0,D=0,y= tmNow.GetYear(),m= tmNow.GetMonth(),d=tmNow.GetDay(),h=tmNow.GetHour(),minu=tmNow.GetMinute(),sec=tmNow.GetSecond();
 
-	TCHAR** vtDays=0;
-	TCHAR** vtHours=0;
-
-	CParams*   pTime = p->m_pTime;
-	CParams*   pFreq = p->m_pFreq;
-	int nFreqTimes = 0;//_ttoi(pFreq->m_pParam0);
-	LONGLONG   nElapse =0, llElapse=0;
-	TCHAR tchTmp[MAX_PATH];
- 
-	if (!pTime)
-	{
-		//×ÓÈÎÎñÖÐ£¬¸ÃÖµÎªNULL.
-		pTime = new CParams();
-
-		_stprintf(tchTmp,_T("%d.%d.%d"), y, m, d);
-		CParams::CopyParam(pTime->m_pParam0, tchTmp);
-
-		_stprintf(tchTmp,_T("%d:%d:%d"), h, minu, sec);
-		CParams::CopyParam(pTime->m_pParam1, tchTmp);
-
-		p->m_pTime = pTime;
-	}
-
-	CParams*   pNextTrigTime = p->m_pNextTrigTime;
-	if (!pNextTrigTime)
-	{
-		//pNextTrigTimeÀïµÄÖµ£¬»áÔÚÃ¿´ÎonTimerÀïÃæ½øÐÐÐÞ¸Ä£¬²¢±£´æµ½XMLÀï¡£
-		pNextTrigTime = new CParams(*pTime);
-	}
- 
-	//»ñÈ¡XMLÖÐ±£´æµÄ£¬ÈÎÎñÏÂ´Î´¥·¢¾à½ñµÄ×ÜÃëÊý
-	nElapse =  CTskTimerMgr::GetTimeEspase(p->m_pNextTrigTime);
-	bool bNextTrigTimeInvalid = false;
-	if (nElapse == -1)
-	{
-		//»ñÈ¡XMLÖÐ±£´æµÄ£¬ÈÎÎñ´¥·¢Ê±»ú¾à½ñµÄ×ÜÃëÊý
-		nElapse =  CTskTimerMgr::GetTimeEspase(p->m_pTime);
-		if (nElapse == -1)
-		{
-			return false;
-		}
-		bNextTrigTimeInvalid = true;
-	} 
-
-	if (p->m_pNextTrigTime->chType == 0)
-	{
-		//¶ÔÓÚ¼´Ê±ÄÖÖÓ£¬ÏÔÈ»ÏÂ´ÎÈÎÎñµÄÊ±¼äÊÇÎÞÐ§µÄ
-		bNextTrigTimeInvalid = true;
-	}
-
-	do 
-	{
-		//»ñÈ¡Ê±¼äÆ«ÒÆÁ¿,²ÎÊý¸ñÊ½ÀàËÆÓÚ 1.0:0:0
-		CParams*   pOffset = p->m_pOffset; 
-		int nOffsetDays = 0;
-
-		if (nElapse<0 || bNextTrigTimeInvalid)
-		{
-			//¶ÔÓÚ¼´Ê±ÄÖÖÓ£¬»òÕßÏÂ´Î´¥·¢Ê±»úÃ»ÓÐÕýÈ·¼ÇÂ¼Ê±£¬ÎÒ¶¼ÐèÒªÀÛ¼ÓÏÂ´ÎÊ±¼äÆ«ÒÆ
-			llElapse =  CTskTimerMgr::GetOffsetEspase( pOffset);
-			nOffsetDays = llElapse/(24*60*60);
-
-			switch(pOffset->chType)
-			{
-			case 0:
-				//Ö®Ç°
-				nElapse -= llElapse;
-				nOffsetDays = -nOffsetDays;
-				break;
-			case 1:
-				//Ö®ºó
-				nElapse += llElapse;
-				break;
-			}
-		}
-
-		//bNextTrigTimeInvalidÖ»¶ÔµÚÒ»´ÎÑ­»·ÓÐÓÃ
-		bNextTrigTimeInvalid = true;
-#if 0
-		int newY=0, newM=0, newD=0;
-
-		//²ÎÊý¸ñÊ½ÀàËÆÓÚ  2013.2.24 
-		newY=nsYLX::CUtil::Split(OUT vtDays, IN 3, IN  pTime->m_pParam0, IN _T("."));
-		if (newY!=3)
-		{
-			nsYLX::CUtil::ClearMemForSplit(vtDays,3);
-			return -1;//¸ñÊ½²»¶ÔÑ½
-		}
-
-		Y = _ttoi(vtDays[0]);
-		M = _ttoi(vtDays[1]);
-		D = _ttoi(vtDays[2]);
-		nsYLX::CUtil::ClearMemForSplit(vtDays,3);
-
-		//¸ù¾ÝÆ«ÒÆµÄÌìÊý£¬»ñµÃÏÂÒ»¸öÈÕÆÚµÄÄêÔÂÈÕ
-		CTskTimerMgr::GetDateNxtDays(Y, M, D, newY, newM, newD, nOffsetDays);
-
-		//¸ù¾ÝÆ«ÒÆµÄÃëÊý£¬»ñµÃÏÂÒ»¸öÈÕÆÚµÄÊ±·ÖÃë
-		nOffsetDays = llElapse%(24*60*60);
-		if (pOffset->chType == 0)
-		{
-			//Ö®Ç°
-			nOffsetDays -= nOffsetDays;
-		}
-
-		h=nsYLX::CUtil::Split(OUT vtHours, IN 3, IN  pTime->m_pParam1, IN _T(":"));
-		if (h!=3)
-		{
-			nsYLX::CUtil::ClearMemForSplit(vtHours,3);
-			return -1;//¸ñÊ½²»¶ÔÑ½
-		}
-
-		h = _ttoi(vtHours[0]);
-		minu = _ttoi(vtHours[1]);
-		sec = _ttoi(vtHours[2]);
-
-		nsYLX::CUtil::ClearMemForSplit(vtHours,3);	
-		CTskTimerMgr::GetDateNxtSecs(&newY, &newM, &newD, &h, &minu, &sec, nOffsetDays);
- 
-		_stprintf(tchTmp,_T("%d.%d.%d"), newY, newM, newD);
-		CParams::CopyParam(pNextTrigTime->m_pParam0, tchTmp);
-
-		_stprintf(tchTmp,_T("%d:%d:%d"), h, minu, sec);
-		CParams::CopyParam(pNextTrigTime->m_pParam1, tchTmp);
-#endif
-
-		int nLoopTimes = 0;
-		int nTotalDays=0;
-
-		//»ñÈ¡Ö´ÐÐÆµÂÊ²ÎÊý¡£²¢¾Ý´ËÖØÐÂÉè¶¨¼ÆÊ±ÈÎÎñ 
-		llElapse  =  CTskTimerMgr::GetFreqEspase(pFreq, nElapse);
-
-		int nExecCount = _ttoi(pFreq->m_pParam0);
-
-		//´ËÊ± llElapse ´æ·ÅÁËÆµÂÊÊ±¶Î, 
-		if ( llElapse >0 && nElapse<0  )
-		{ 
-			//nExeCount ==1Ê±£¬ÈÎÎñÒÑ¾­¹ýÆÚ£¬ËùÒÔ±ØÐë´óÓÚ1²Å´¦Àí¡£
-			if (nExecCount==-1)
-			{
-				nElapse = llElapse -  (-nElapse) % llElapse; 
-			}else
-			{
-				while( nExecCount>1 )
-				{
-					nElapse += llElapse;
-					if (nElapse>=0)
-					{
-						break;
-					}
-					nExecCount--;
-				}
-				_itot(nExecCount, pFreq->m_pParam0, 10);
-			} 
-		} 
-
-		y= tmNow.GetYear(),m= tmNow.GetMonth(),d=tmNow.GetDay(),h=tmNow.GetHour(),minu=tmNow.GetMinute(),sec=tmNow.GetSecond();
-		CTskTimerMgr::GetDateNxtSecs(&y, &m, &d, &h, &minu, &sec, nElapse);
-
-		ATLASSERT(ISVALIDDATE(y,m,d,h,minu,sec)); 
-
-		_stprintf(tchTmp,_T("%d.%d.%d"), y, m, d);
-		CParams::CopyParam(pNextTrigTime->m_pParam0, tchTmp);
-
-		_stprintf(tchTmp,_T("%d:%d:%d"), h, minu, sec);
-		CParams::CopyParam(pNextTrigTime->m_pParam1, tchTmp);
-		
-		p->m_llTotalElapse = nElapse;
-		if (nElapse<0)
-		{
-			//¹ýÆÚÁË
-			p->m_nState = EXPIRED;
-		}
-
-		//ÈÃÖ÷³ÌÐò½«Ê£ÓàÊ±¼ä·¢ËÍ¸øHTMLÁË¡£
-		::PostMessage(m_hOwnWnd, ngUpdateLeftTimeMsg, p->m_nId,(LPARAM)0 );
-
-		if (nElapse > 3600*24 )
-		{
-			//³¬¹ýÒ»ÌìµÄÃëÊý£¬ÄÇÃ´½ñÌìµÄÈÎÎñ¾ÍÃ»ÓÐÁË£¬ËùÒÔ²»ÐèÒªÖ´ÐÐ
-			return false;
-		}
-
-		::KillTimer(m_hOwnWnd,p->m_nId);
- 
-		if (nElapse>=0)
-		{
-			//::SetTimer(m_hOwnWnd, p->m_nId, nElapse*1000, NULL);
-			::PostMessage(m_hOwnWnd, ngTrigTskMsg, p->m_nId,(LPARAM)nElapse );
-		}else
-		{ 			
-			nElapse = -1;//¹ýÆÚµÄÈÎÎñ
-			//¶ÔÓÚ¹ýÆÚÈÎÎñ£¬ÎÒÈÔÈ»ÈÃËü½øÈëonTimer,ÒÔ±ã¼ì²âÆäÊÇ·ñÓÐÑ­»·»òÕß×ÓÈÎÎñ¡£
-
-			p->m_nState |= EXPIRED;
-		}
-	 
-		bRtn = true;
-
-	} while (0);
-#endif
 	return bRtn;
 }//StartSingleTimerTsk
  
@@ -405,23 +199,24 @@ void CTskTimerMgr::StartTimerTsk(CListHead* plistEntry)
 
 void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, IN int n)
 {
-    if(!p) p = new CParams();
-    xmlChar* xckey;
-    int nLen=0;
+	if(!p) p = new CParams();
+	xmlChar* xckey;
+	int nLen=0;
+
 	for(xmlNodePtr cur = nd->xmlChildrenNode;cur;cur=cur->next)
 	{
 		xckey = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-        if(!xckey) continue;
-        const char* key = (const char*)xckey;
-        
-        if (!xmlStrcmp(cur->name, (const xmlChar *)"Id"))
+		if(!xckey) continue;
+		const char* key = (const char*)xckey;
+
+		if (!xmlStrcmp(cur->name, (const xmlChar *)"Id"))
 		{
 		    p->m_nId  = atoi(key);
 		}else if (!xmlStrcmp(cur->name, (const xmlChar *)"Type"))
 		{
 		    p->chType  = atoi(key);
 		}else if (!xmlStrcmp(cur->name, (const xmlChar *)"Param0")
-                ||!xmlStrcmp(cur->name, (const xmlChar *)"Param"))
+		||!xmlStrcmp(cur->name, (const xmlChar *)"Param"))
 		{
 		    nLen =   strlen(key);
 		    if(!p->m_pParam0) p->m_pParam0 = new TCHAR[nLen+1];
@@ -437,8 +232,8 @@ void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, I
 		    if(!p->m_pParam2) p->m_pParam2 = new TCHAR[nLen+1];
 		    _tcscpy(p->m_pParam2, key);
 		}     
-        xmlFree(xckey);
-    }//for
+		xmlFree(xckey);
+	}//for
 }
 
 void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTimer* p)
@@ -484,42 +279,40 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
         }
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Freq"))
 		{
-            for(pChild = cur->xmlChildrenNode;pChild;pChild=pChild->next)
+          for(pChild = cur->xmlChildrenNode;pChild;pChild=pChild->next)
             {
-                childKey = xmlNodeListGetString(doc, pChild->xmlChildrenNode, 1);
-                if(!childKey) continue;
+              childKey = xmlNodeListGetString(doc, pChild->xmlChildrenNode, 1);
+              if(!childKey) continue;
                 
-                if (!xmlStrcmp(pChild->name, (const xmlChar *)"Type"))
+              if (!xmlStrcmp(pChild->name, (const xmlChar *)"Type"))
                 {
-                    p->m_pFreq->chType  = atoi((const char*)childKey);
-                }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Times"))
+                  p->m_pFreq->chType  = atoi((const char*)childKey);
+              }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Times"))
                 {
-                    //must use MAX_PATH£¬main program will reset it's content later.
-                    p->m_pFreq->m_pParam0 = new TCHAR[MAX_PATH];
-                    _tcsncpy(p->m_pFreq->m_pParam0
-                             , (const char*)childKey
-                             ,min((int)strlen((const char*)childKey)+1, (int)MAX_PATH));
-                }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Interval"))
+                //must use MAX_PATHï¼Œmain program will reset it's content later.
+                p->m_pFreq->m_pParam0 = new TCHAR[MAX_PATH];
+                _tcsncpy(p->m_pFreq->m_pParam0
+                         , (const char*)childKey
+                         ,min((int)strlen((const char*)childKey)+1, (int)MAX_PATH));
+              }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Interval"))
                 {
-                    nLen = strlen((const char*)childKey);
-                    p->m_pFreq->m_pParam1 = new TCHAR[nLen+1];
-                    _tcscpy(p->m_pFreq->m_pParam1, (const char*)childKey); 
+                nLen = strlen((const char*)childKey);
+                p->m_pFreq->m_pParam1 = new TCHAR[nLen+1];
+                _tcscpy(p->m_pFreq->m_pParam1, (const char*)childKey); 
                 }
-                xmlFree(childKey);
+              xmlFree(childKey);
             }//for            
         }
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Actions"))
 		{
-            
-            BuildParam(doc, IN cur, OUT p->m_pOffset, 1); 
+          BuildParam(doc, IN cur, OUT p->m_pOffset, 1); 
         }
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Tasks"))
 		{
-       		p->m_pChildsEntry= new CTskTimer;
-            ParseTsksNode(doc, cur, OUT p->m_pChildsEntry);
+          p->m_pChildsEntry= new CTskTimer;
+          ParseTsksNode(doc, cur, OUT p->m_pChildsEntry);
 		}
-                
-        xmlFree(xckey);
+       xmlFree(xckey);
 	}//for2
 }//XmlNodeToTsk
 
@@ -542,7 +335,7 @@ bool CTskTimerMgr::ParseTsksNode(xmlDocPtr doc, xmlNodePtr tsksNd, OUT  CTskTime
         XmlNodeToTsk(doc, IN ndTsk,IN OUT p);
 
         //p->m_bParent = bAsParent;
-        //µ¹Ðò¼ÓÈëµ½ÈÎÎñÁ´±í 
+        //å€’åºåŠ å…¥åˆ°ä»»åŠ¡é“¾è¡¨ 
         p->m_ListEntry.next  = pTskTimerEntry->m_ListEntry.next;
         p->m_ListEntry.prev  = &pTskTimerEntry->m_ListEntry; 
  
@@ -554,8 +347,8 @@ bool CTskTimerMgr::ParseTsksNode(xmlDocPtr doc, xmlNodePtr tsksNd, OUT  CTskTime
 
 bool CTskTimerMgr::LoadTskXml(const char* resFile)
 {
-	xmlDocPtr doc=0;   //¶¨Òå½âÎöÎÄµµÖ¸Õë
-	xmlNodePtr root;  //¶¨Òå½áµãÖ¸Õë(ÄãÐèÒªËüÎªÁËÔÚ¸÷¸ö½áµã¼äÒÆ¶¯)
+	xmlDocPtr doc=0;   //å®šä¹‰è§£æžæ–‡æ¡£æŒ‡é’ˆ
+	xmlNodePtr root;  //å®šä¹‰ç»“ç‚¹æŒ‡é’ˆ(ä½ éœ€è¦å®ƒä¸ºäº†åœ¨å„ä¸ªç»“ç‚¹é—´ç§»åŠ¨)
 	bool ret = true;
 
 	if(access(resFile,0)==-1)
@@ -572,7 +365,7 @@ bool CTskTimerMgr::LoadTskXml(const char* resFile)
         fl_alert("%s not parsed successfully.", resFile);
 		return 0;
 	}    
-	root = xmlDocGetRootElement(doc);  //È·¶¨ÎÄµµ¸ùÔªËØ
+	root = xmlDocGetRootElement(doc);  //ç¡®å®šæ–‡æ¡£æ ¹å…ƒç´ 
     xmlNodePtr tsksNd = root;
     ParseTsksNode(doc, tsksNd, OUT m_pTskTimerEntry);
     
@@ -610,7 +403,7 @@ void CTskTimerMgr::ParseXml(BYTE* psXml)
 		}
 		CString s=	root->GetValue();
 
-		//ÏÈÕÒÈÎÎñ
+		//å…ˆæ‰¾ä»»åŠ¡
 		JWXml::CXmlNodes ndTsks;
 		root->SelectNodes(&ndTsks, _T("Tasks/Task "));//Tasks/Task 
 

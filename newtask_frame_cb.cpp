@@ -83,7 +83,7 @@ void startdate_cb(Fl_Widget* wid, void *data)
 }
 
 void doscheme(Fl_Choice *c, void *) {
-//Fl::scheme(c->text(c->value()));
+
 }
 
 void actionChoice(Fl_Choice *c, void *)

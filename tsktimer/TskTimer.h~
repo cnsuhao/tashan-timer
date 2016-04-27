@@ -1,6 +1,16 @@
 #pragma once
 
-class  __declspec(dllexport) CParams
+#ifdef WIN32
+#include <windows.h>
+#include <tchar.h>
+#else
+#include <stdio.h>
+#include "../include/auto_tchar.h"
+#endif
+
+#include "../include/macrodef.h"
+
+class  CParams
 {
 public:
 	CParams();
@@ -13,11 +23,11 @@ public:
 	 TCHAR* m_pParam1;
 	 TCHAR* m_pParam2; 
 
-	 static void CParams::CopyParam(TCHAR*& pDes, TCHAR* pSrc);
+	 static void CopyParam(TCHAR*& pDes, TCHAR* pSrc);
 	 CParams& operator=(const CParams& other);
 };
 
-//背包链表
+//Backpack list
 struct CListHead
 { 
 	struct CListHead *prev,*next;
@@ -26,7 +36,7 @@ struct CListHead
 		prev = next = this;
 	};
 	//CListHead& operator=(const CListHead& other);
-};
+}; 
 
 enum TSKSTATE
 {
@@ -37,8 +47,7 @@ enum TSKSTATE
 	EXPIRED		=	((int)0x1)<<4     //过期
 };
 
-//#pragma  pack(1)
-class __declspec(dllexport) CTskTimer
+class CTskTimer
 {
 public: 
 	CListHead   m_ListEntry;
@@ -51,7 +60,6 @@ public:
 	int         m_nState;//该标志在OnTimer函数里，实际执行时才设置 0:未执行   1:暂停    2:过期或无效，等待删除
 
 	LONGLONG    m_llTotalElapse;  //任务触发，距今总秒数
-	//bool        m_bChildTskLoaded; 
 	bool        m_bParent;
 
 	TCHAR*		m_pTskName;
@@ -62,13 +70,14 @@ public:
 	CParams*	m_pFreq;
 	CParams**	m_pActions;
 	CTskTimer*  m_pChildsEntry;
+
+
+	static void Append(CListHead* pListHeader, CTskTimer* pTsk);
+	static void Del(CTskTimer* pTsk);
+
 	HANDLE      m_hPauseEvent;
-
-	//static void CTskTimer::Replace(CTskTimer* pOld,CTskTimer* pNew);
-	static void CTskTimer::Append(CListHead* pListHeader, CTskTimer* pTsk);
-	static void CTskTimer::Del(CTskTimer* pTsk);
-
 	void Lock();
 	void UnLock();
+
 };
-//#pragma  pack()
+

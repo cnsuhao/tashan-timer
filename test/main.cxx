@@ -79,23 +79,9 @@ bool loadTskXml(const char* resFile)
 }//loadTskXml
 
 int main(int argc, char** argv)
-{
-    setlocale(LC_ALL, "");
-    #if 0
-    enum e{
-        E_ONE=(((unsigned int)0x1)<<1),
-        E_TWO,
-          };
-    wchar_t wc;
-    char c; 
-    printf("wchar:%ld, char: %ld\n",sizeof(wc), sizeof(c));
-    #endif
- 
+{ 
     CTskTimerMgr ttm;
     ttm.LoadTskXml("../task.xml");
-    //loadTskXml("../task.xml");
-    wchar_t hello[]=L"世界你好！";
-    printf("%ls, %d\n", hello, sizeof(hello));
-
     return 0;
 }
+

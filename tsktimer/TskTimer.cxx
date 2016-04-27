@@ -18,7 +18,7 @@
 CParams::CParams()
 {
 	chType =0x0; 
-	m_nId = 0;//Ö»¶Ô¶¯×÷±äÁ¿ÓĞĞ§
+	m_nId = 0;//åªå¯¹åŠ¨ä½œå˜é‡æœ‰æ•ˆ
 
 	m_pParam0 = 0;
 	m_pParam1 = 0;
@@ -89,7 +89,7 @@ CTskTimer::CTskTimer(void)
 	m_pActions = 0;
 	m_nActionsCount=0;
 
-	m_pChildsEntry = 0;//ĞèÒªÒ»¸ö¿ÕÍ·½áµã
+	m_pChildsEntry = 0;//éœ€è¦ä¸€ä¸ªç©ºå¤´ç»“ç‚¹
 	
 	m_nId = -1;
 	m_nState = 0;

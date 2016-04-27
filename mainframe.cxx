@@ -26,44 +26,7 @@ static void MyMenuCallback2(Fl_Widget *w, void *) {
   fprintf(stderr, "\n");
   if ( strcmp(item->label(), "Google") == 0 ) { ; }
   if ( strcmp(item->label(), "&Quit") == 0 ) { exit(0); }
-  
-
 }
-
- 
-  static Fl_Menu_Item	items[] = {
-#if 0
-//{"新建任务",FL_COMMAND | 'n',MyMenuCallback2,0,0},
-//{0},
-{"设置",0,MyMenuCallback2,0,FL_SUBMENU},
-{0},
-      { "&Help", 0, 0, 0, FL_SUBMENU },
-      {"关于",FL_COMMAND ,MyMenuCallback2,0,0},
-      {0},
-      {0}
-#endif
-#if 1
-    { "&Game", 0, 0, 0, FL_SUBMENU },
-    { "&New Game", FL_COMMAND | 'n', MyMenuCallback2, 0, FL_MENU_DIVIDER },
-    { "&Check Game", FL_COMMAND | 'c', MyMenuCallback2, 0, 0 },
-    { "&Restart Game", FL_COMMAND | 'r', MyMenuCallback2, 0, 0 },
-    { "&Solve Game", FL_COMMAND | 's', MyMenuCallback2, 0, FL_MENU_DIVIDER },
-    { "&Update Helpers", 0, MyMenuCallback2, 0, 0 },
-    { "&Mute Sound", FL_COMMAND | 'm', MyMenuCallback2, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER },
-    { "&Quit", FL_COMMAND | 'q', MyMenuCallback2, 0, 0 },
-    { 0 },
-    { "&Difficulty", 0, 0, 0, FL_SUBMENU },
-    { "&Easy", 0, MyMenuCallback2, (void *)"0", FL_MENU_RADIO },
-    { "&Medium", 0, MyMenuCallback2, (void *)"1", FL_MENU_RADIO },
-    { "&Hard", 0,  MyMenuCallback2, (void *)"2", FL_MENU_RADIO },
-    { "&Impossible", 0, MyMenuCallback2, (void *)"3", FL_MENU_RADIO },
-    { 0 },
-    { "&Help", 0, 0, 0, FL_SUBMENU },
-    { "&About Sudoku", FL_F + 1, MyMenuCallback2, 0, 0 },
-    { 0 },
-    { 0 }
-#endif
-  };
 
 
 void about_cb(Fl_Widget *o, void * param)
@@ -72,7 +35,6 @@ void about_cb(Fl_Widget *o, void * param)
 
   float nScreenW = pThis->w();
   float nScreenH = pThis->h();
-  //printf("w:%f, h:%f\n",nScreenW,nScreenH);
   
   const  char* s = (char*)param;
   Fl_Widget*  pWnd = 0;
@@ -97,17 +59,14 @@ void about_cb(Fl_Widget *o, void * param)
 }
 
 void cb(Fl_Widget *w, void *) { 
-    //static char msg[200];
-    //snprintf(msg, sizeof(msg)-1,"you have press %s", w->label());
-    //msg[sizeof(msg)-1]=0;
     fl_alert("you have press %s", w->label());
 }
  
 void CMainFrame::Init()
 {
     pTskAddFrame=0;
-	const int dimW = w();//751;//476;
-	const int dimH = h();//642;//444;
+	const int dimW = w();
+	const int dimH = h();
 	const int menubarH = MENUBARH;
 	menubar_ = new Fl_Sys_Menu_Bar(0, 0, w(), MENUBARH);
     menubar_->add("新建任务",0,about_cb,(void*)"newtsk",0);
@@ -115,22 +74,15 @@ void CMainFrame::Init()
 	menubar_->add("帮助",0,0,0,FL_SUBMENU);  
     menubar_->add("帮助/关于",FL_F+1,about_cb,(void*)"about",0);
 
-    //menubar_->image(new Fl_Tiled_Image(new Fl_Pixmap((const char * const *)tile_xpm)));
-
-    //childframe = new CChildFrame(0, MENUBARH,w(),h()-MENUBARH);
-    //childframe->box(FL_NO_BOX);
-    //childframe->resizable(*childframe);
   
     dragbox *box = new dragbox(0,menubarH, dimW, dimH-menubarH);
-    //box->image(new Fl_Tiled_Image(new Fl_Pixmap((const char * const *)tile_xpm)));
-    //box->label("xxx");
     box->box(FL_FLAT_BOX);
 
     Fl_Group *g = new Fl_Group(0,menubarH, dimW, dimH-menubarH);
     g->box(FL_NO_BOX);
     g->end();
     
-	int dx = 0, dy = dx; // border width of resizable() - see below
+	int dx = 0, dy = dx; 
 	int yOffset = MENUBARH;
 	Fl_Tile *tile=new Fl_Tile(0,yOffset, w(), h()-MENUBARH);
 
@@ -138,7 +90,6 @@ void CMainFrame::Init()
 	box0->box(FL_DOWN_BOX);
 	box0->color(9);
 	box0->labelsize(36);
-	//box0->align(FL_ALIGN_CLIP);
     box0->size_range(150, box0->h(), 0, 0);
     size_range(150,1,0,0);//611 459
 
@@ -173,28 +124,15 @@ void CMainFrame::Init()
 	box0->end();  
 	box0_g->resizable(*g);
 	dx=dy=0;
-	//Fl_Box *r=new Fl_Box(tile->x()+dx+150,tile->y()+dy,tile->w()-2*dx-150,tile->h()-2*dy);
-	//tile->resizable(*r);
-	// r.box(FL_BORDER_FRAME);
 
-    //r=new Fl_Box(150,MENUBARH,w()-150,h()-MENUBARH);//(tskfrm->x(),tskfrm->y(), tskfrm->w(), tskfrm->h());
-    //r->box(FL_BORDER_FRAME);
-    //Fl_Scroll *scr=new Fl_Scroll(150,MENUBARH,w()-150,h()-MENUBARH);
-    //scr->begin();
 	CTaskFrame *tskfrm=new CTaskFrame(150,MENUBARH,w()-150,h()-MENUBARH,"1");
 
     
 	tskfrm->box(FL_BORDER_FRAME);
 	tskfrm->size_range(350,100,0,0);
     
-
-    //tskfrm->resizable(scr);
     tskfrm->end();
-    //scr->end();    
 
-    //scr->resizable(*tskfrm);
-	//tile->resizable(*tskfrm);
-    //tskfrm->resizable(*tskfrm);
 	tile->end();
 	end();
 

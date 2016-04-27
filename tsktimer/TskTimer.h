@@ -36,15 +36,15 @@ struct CListHead
 		prev = next = this;
 	};
 	//CListHead& operator=(const CListHead& other);
-};
+}; 
 
 enum TSKSTATE
 {
-    RUNNING		=	0x1,    //ÕıÔÚÔËĞĞ
+    RUNNING		=	0x1,    //æ­£åœ¨è¿è¡Œ
 	STOP		=	0x2,
-	PAUSE		=	((int)0x1)<<2,      //ÔİÍ£
-	FORDELETE	=	((int)0x1)<<3,  //´ıÉ¾³ı
-	EXPIRED		=	((int)0x1)<<4     //¹ıÆÚ
+	PAUSE		=	((int)0x1)<<2,      //æš‚åœ
+	FORDELETE	=	((int)0x1)<<3,  //å¾…åˆ é™¤
+	EXPIRED		=	((int)0x1)<<4     //è¿‡æœŸ
 };
 
 class CTskTimer
@@ -57,9 +57,9 @@ public:
  
 	int			m_nId;
 	int         m_nActionsCount;
-	int         m_nState;//¸Ã±êÖ¾ÔÚOnTimerº¯ÊıÀï£¬Êµ¼ÊÖ´ĞĞÊ±²ÅÉèÖÃ 0:Î´Ö´ĞĞ   1:ÔİÍ£    2:¹ıÆÚ»òÎŞĞ§£¬µÈ´ıÉ¾³ı
+	int         m_nState;//è¯¥æ ‡å¿—åœ¨OnTimerå‡½æ•°é‡Œï¼Œå®é™…æ‰§è¡Œæ—¶æ‰è®¾ç½® 0:æœªæ‰§è¡Œ   1:æš‚åœ    2:è¿‡æœŸæˆ–æ— æ•ˆï¼Œç­‰å¾…åˆ é™¤
 
-	LONGLONG    m_llTotalElapse;  //ÈÎÎñ´¥·¢£¬¾à½ñ×ÜÃëÊı
+	LONGLONG    m_llTotalElapse;  //ä»»åŠ¡è§¦å‘ï¼Œè·ä»Šæ€»ç§’æ•°
 	bool        m_bParent;
 
 	TCHAR*		m_pTskName;

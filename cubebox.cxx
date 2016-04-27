@@ -32,19 +32,15 @@ glFlush();
 }
 void cube_box::init()
 {
-    //type(FL_MULTI_BROWSER);
-      //Fl_Widget::callback(Widget_Browser_callback);
   when(FL_WHEN_RELEASE);
     lasttime = 0.0;   
   Fl_Group *g = new Fl_Group(10, 8, 80, 20);
   g->box(FL_NO_BOX);
   Fl_Button *b = new Fl_Button(10, 8, g->w(), g->h(), "Close");
-  //b->callback(cb);
 
   g->end();
   g->resizable(NULL);
-   mode(FL_RGB | FL_ALPHA | FL_DEPTH | FL_DOUBLE);
-
+  mode(FL_RGB | FL_ALPHA | FL_DEPTH | FL_DOUBLE);
 }
 
 //http://research.cs.wisc.edu/graphics/Courses/559-f2004/tutorials/tutorial3.html
@@ -53,9 +49,10 @@ void cube_box::InitializeGL()
    glClearColor(.1f, .1f, .1f, 1);
    glEnable(GL_DEPTH_TEST);
 
-glClearColor(0.5f,0.5f,1.0f,0.0f);
+   glClearColor(0.5f,0.5f,1.0f,0.0f);
 
 }
+
 void cube_box::DrawCube()
 {
    glBegin(GL_QUADS);
@@ -120,16 +117,7 @@ void cube_box::draw()
       firstTime = false;
    }// if
     glClear(GL_COLOR_BUFFER_BIT);
-   glBegin(GL_TRIANGLES);//
-//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);      // clear the color and depth buffer
-
-   // view transformations
-   //glMatrixMode(GL_PROJECTION);
-   //glLoadIdentity();
-   // glFrustum(-1, 1, -1, 1, 1, 100);
-   // glMatrixMode(GL_MODELVIEW);
-   //glLoadIdentity();
-   //gluLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0);
+   glBegin(GL_TRIANGLES);
 
 
 glEnd();
@@ -143,7 +131,6 @@ int cube_box::handle(int e) {
   }
   return Fl_Gl_Window::handle(e);
 }
-
 
 #endif
 
