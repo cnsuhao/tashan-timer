@@ -1,0 +1,16 @@
+  //Fl_Group *g = new Fl_Group(10, 20, 80, 20);
+  //g->box(FL_NO_BOX);
+  //Fl_Button *b = new Fl_Button(10, 20, 80, 20, "Close");
+  //b->callback(cb);
+  //g->end();
+  //g->resizable(NULL);
+  // Fl_Group *g = new Fl_Group(60, 70, 80, 40, "Drag me");
+  //g->box(FL_NO_BOX);
+  //g->align(FL_ALIGN_TOP);
+  //Fl_Button *bs = new Fl_Button(60, 70, 80, 20, "Shrink");
+  //bs->callback(shrink, &dim);
+  //bs->deactivate();
+  //Fl_Button *be = new Fl_Button(60, 90, 80, 20, "Enlarge");
+  //be->callback(enlarge, bs);
+  //g->end();
+  //g->resizable(NULL);
