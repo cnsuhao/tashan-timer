@@ -1,4 +1,5 @@
 
+#include "../include/stdafx.h"
 #ifdef WIN32
 #include <windows.h>
 #include <tchar.h>

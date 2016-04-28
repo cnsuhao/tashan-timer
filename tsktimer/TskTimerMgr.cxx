@@ -10,7 +10,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-//#include <linux/kernel.h>
+#include "../utils/intvec.h" //CLongVector
 
 
 #if defined(WIN32) && defined(_DEBUG)
@@ -199,10 +199,11 @@ void CTskTimerMgr::StartTimerTsk(CListHead* plistEntry)
 
 void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, IN int n)
 {
-	if(!p) p = new CParams();
-	xmlChar* xckey;
-	int nLen=0;
-
+    if(!nd) return;
+    
+    if(!p) p = new CParams();
+    xmlChar* xckey;
+    int nLen=0;
 	for(xmlNodePtr cur = nd->xmlChildrenNode;cur;cur=cur->next)
 	{
 		xckey = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -248,26 +249,27 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
 	for(xmlNodePtr cur = ndTsk->xmlChildrenNode;cur;cur=cur->next)
 	{
 		xckey = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-        if(!xckey) continue;
+
         const char* key = (const char*)xckey;
 		if (!xmlStrcmp(cur->name, (const xmlChar *)"Id"))
 		{
-            p->m_nId = atoi(key);
+            if(key) p->m_nId = atoi(key);
 		}
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"State"))
 		{
-			p->m_nState = atoi(key);
+			if(key) p->m_nState = atoi(key);
 		}
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Name"))
 		{
+            if(!xckey) continue;
+            
             nLen = strlen((const char*)key);
             p->m_pTskName = new TCHAR[nLen+1];
             _tcscpy(p->m_pTskName,  (const char*)key);
-            
 		}
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Time"))
 		{
-            BuildParam(doc, IN cur, OUT p->m_pTime, 2);          
+            BuildParam(doc, IN cur, OUT p->m_pTime, 2);
 		}
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"NextTrigTime"))
 		{
@@ -305,25 +307,38 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
         }
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Actions"))
 		{
-          BuildParam(doc, IN cur, OUT p->m_pOffset, 1); 
+            CLongVector lv;
+            for(pChild = cur->xmlChildrenNode;pChild;pChild=pChild->next)
+            {
+                if (xmlStrcmp(pChild->name, (const xmlChar *)"Action")) continue;
+                childKey = xmlNodeListGetString(doc, pChild->xmlChildrenNode, 1);
+                
+                CParams* pActionParams =  new CParams;
+                BuildParam(doc, IN pChild, OUT pActionParams, 1);
+                lv.push_back((long)pActionParams);
+                
+                if(childKey) xmlFree(childKey);
+            }//for
+            
+            p->m_nActionsCount = lv.size();
+            if(p->m_nActionsCount>0)
+            {
+                p->m_pActions = new CParams*[p->m_nActionsCount];
+                for(int k=0;k<p->m_nActionsCount;k++)
+                {
+                    p->m_pActions[k] = (CParams*)lv[k];
+                }//for
+            }//if
         }
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Tasks"))
 		{
           p->m_pChildsEntry= new CTskTimer;
           ParseTsksNode(doc, cur, OUT p->m_pChildsEntry);
 		}
-       xmlFree(xckey);
+                
+        if(xckey) xmlFree(xckey);
 	}//for2
 }//XmlNodeToTsk
-
-//pTskTimerEntry !=NULL 
-void CTskTimerMgr::ParseChildXml(xmlNodePtr ndTsks,IN OUT CTskTimer* pTskTimerEntry, IN bool bAsParent)
-{
-	if (!pTskTimerEntry)
-	{
-		return;
-	}
-}//ParseChildXml
 
 bool CTskTimerMgr::ParseTsksNode(xmlDocPtr doc, xmlNodePtr tsksNd, OUT  CTskTimer* pTskTimerEntry)
 {
@@ -366,8 +381,8 @@ bool CTskTimerMgr::LoadTskXml(const char* resFile)
 		return 0;
 	}    
 	root = xmlDocGetRootElement(doc);  //确定文档根元素
-    xmlNodePtr tsksNd = root;
-    ParseTsksNode(doc, tsksNd, OUT m_pTskTimerEntry);
+
+    ParseTsksNode(doc, root, OUT m_pTskTimerEntry);
     
 	xmlFreeDoc(doc);
 	xmlCleanupParser();     

@@ -1,4 +1,6 @@
 
+#include "tsktimer/TskTimer.h"
+#include "tsktimer/TskTimerMgr.h"
 #include "taskrow.h"
 #include "tasktable.h"
 #include "ui/imgdata.h"
@@ -6,6 +8,24 @@
 #include <FL/fl_ask.H>
 
 extern CBtnStruc btnsStruc[];
+
+
+CTaskRow* CTaskTable::BuildTskRow(int& yOffset, CTskTimer* pTskTimer)
+{ 
+    CTaskRow* oRow =0;
+
+	oRow =  new CTaskRow(0, yOffset,w(), 35,"",0);
+	yOffset=oRow->BuildRow(1, yOffset+5, 35, btnsStruc);
+	oRow->end();
+		
+	//modify tsk name
+	Fl_Group * gp0 = (Fl_Group*)oRow->child(0);
+	Fl_Widget* tskTitle =  (Fl_Widget*)gp0->child(1);
+
+	tskTitle->copy_label(pTskTimer->m_pTskName);
+
+	return oRow;
+}//BuildTskRow
 
 void CTaskTable::OnAddRow(Fl_Widget *w, void *)
 {

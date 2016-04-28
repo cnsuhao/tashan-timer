@@ -1,11 +1,33 @@
 
+
+#include "tsktimer/TskTimer.h"
+#include "tsktimer/TskTimerMgr.h"
 #include "taskrow.h"
 #include "tasktable.h"
 
-CTaskTable::CTaskTable(int x, int y, int w, int h, const char *l) : Fl_Group(x,y,w,h,l)
+CTaskTable::CTaskTable(int X, int Y, int W, int H, const char* L) : Fl_Group(X,Y,W,H,L)
 {
-    nDims=2;
     fl_color(3);
+
+    m_pTskTimerMgr = new CTskTimerMgr();
+    m_pTskTimerMgr->LoadTskXml("task.xml");
+
+	int yOffset=1;
+	//根据m_pTskTimerMgr里的数据，可以设定和启动相应的计时器鸟。
+	CListHead* plistEntry = &m_pTskTimerMgr->m_pTskTimerEntry->m_ListEntry;
+	for(CListHead* pList = plistEntry->prev; pList != plistEntry ;pList = pList->prev)
+	{
+		CTskTimer* p = CONTAINING_RECORD(pList, CTskTimer, m_ListEntry);
+        CTaskRow* oRow = BuildTskRow(yOffset, p);
+        vtRows.push_back((long)oRow);
+	}//for
+    yOffset += 14;
+	end();
+
+    begin();
+	Fl_Group *group3 = new Fl_Group(0, yOffset, w()-0, 35, 0,1);
+    resizable(group3);
+    group3->end();
 }
 
 CTaskTable::~CTaskTable()
@@ -15,11 +37,13 @@ CTaskTable::~CTaskTable()
         delete rowImg;
         rowImg=0L;
     }
+    if(m_pTskTimerMgr) delete m_pTskTimerMgr;
+
 } 
 
 CBtnStruc btnsStruc[]={
         {{2+18,18},"增加任务",&CTaskTable::OnAddRow},
-        {{2,18},"增加子任务",&CTaskTable::OnAddRow},        
+        {{2,17},"增加子任务",&CTaskTable::OnAddRow},        
         {{2+18*2,18},"上移",&CTaskTable::OnAddRow},
         {{2+18*3,18},"下移",&CTaskTable::OnAddRow},
         {{2+18*4,18},"暂停",&CTaskTable::OnAddRow},

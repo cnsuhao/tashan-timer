@@ -16,6 +16,9 @@
 #include <FL/Fl_Browser.H>
 #include <FL/fl_ask.H>
 
+
+class CTaskTable;
+
 class CTaskFrame:public Fl_Window{
 public:
     CTaskFrame(int w, int h, const char* title= 0);
@@ -24,5 +27,7 @@ public:
     void draw();
     int  handle(int event);
     void BuildUI();
+    CTaskTable* m_pTskTable;
+    
 
 };

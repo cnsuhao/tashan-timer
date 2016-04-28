@@ -30,7 +30,6 @@ public:
     void BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, IN int n);
 	void XmlNodeToTsk(xmlDocPtr doc, IN  xmlNodePtr ndTsk,IN OUT CTskTimer* p);
 
-	void ParseChildXml(xmlNodePtr ndTsks,IN OUT CTskTimer* pTskTimerEntry,bool bAsParent);
 	void ParseXml(BYTE* psXml);
     bool LoadTskXml(const char* resFile);
     

@@ -2,23 +2,23 @@
 include Makefile.FLTK
 
 FLTKCONFIG   = ../fltk-1.3.3/fltk-config
-CXX          = $(shell $(FLTKCONFIG) --cxx) -g
-CXXFLAGS     = -I. -I../fltk-1.3.3/include $(shell $(FLTKCONFIG) --cxxflags) -g -p -O0 -Wall -I.  `pkg-config --cflags glu`
+CXX          = $(shell $(FLTKCONFIG) --cxx) -g $(CFS)
+CXXFLAGS     = -I. -I../fltk-1.3.3/include $(shell $(FLTKCONFIG) --cxxflags) -g -p -O0 -Wall -I.  `pkg-config --cflags glu` $(CFS)
 LINKFLTK     = $(shell $(FLTKCONFIG) --ldstaticflags ) -lGLU
 LINKFLTK_GL  = $(shell $(FLTKCONFIG) --use-gl --use-glut --ldstaticflags ) -lGLU
 LINKFLTK_IMG = $(shell $(FLTKCONFIG) --use-images --ldstaticflags)
-LINKFLTK_ALL = $(shell $(FLTKCONFIG) --use-images --use-gl --use-glut --ldstaticflags)  -g -O0  `pkg-config --libs glu`
+LINKFLTK_ALL = $(shell $(FLTKCONFIG) --use-images --use-gl --use-glut --ldstaticflags)  -g -O0  `pkg-config --libs glu libxml-2.0`
 .SUFFIXES: .cxx .h .fl .o shapedwindow$(EXEEXT)
 
 
 BIN_PATH = .
-SRC_PATH := ./ ui/ utils/
+SRC_PATH := ./ ui/ utils/ tsktimer/
 SRC= $(foreach x,$(SRC_PATH),$(wildcard $(addprefix $(x)*,.c .cxx))) 
 OBJFILES = $(addprefix $(OBJ_PATH), $(addsuffix .o,$(notdir $(basename $(SRC))))) 
 
 TARGET = task-timer
 
-SUBDIRS = ui utils
+SUBDIRS = ui utils tsktimer
 
 override define makesub
 	echo "call makesub..."

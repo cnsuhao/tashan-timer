@@ -39,10 +39,14 @@
     }
     long erase(int x)
     {
-        if(x<0 || x>= _size) return 0;
+        if(x<0 || x >= (int)_size) return 0;
+        long tmp = arr[x];
         arr[x]=0;
-        if(x < _size-1)
+        if(x < (int)_size-1)
             memcpy(arr + x , arr + (x+1), (_size-1 - x) * sizeof(long));
+        
+        size(_size-1);
+        return tmp;
     }
     long pop_back() { long tmp = arr[_size-1]; _size--; return(tmp); }
     void push_back(long val) { unsigned int x = _size; size(_size+1); arr[x] = val; }

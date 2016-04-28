@@ -1,4 +1,6 @@
 
+#include "tsktimer/TskTimer.h"
+#include "tsktimer/TskTimerMgr.h"
 #include "tasktable.h"
 #include "taskframe.h"
 
@@ -41,11 +43,10 @@ void CTaskFrame::BuildUI()
 
 void CTaskFrame::Init()
 {
-    CTaskTable *table=new CTaskTable(0, 0, w()+20, h()-0, "FLTK widget table");
-    table->SetSize(2);//10+9);
-    table->end();
+    m_pTskTable=new CTaskTable(0, 0, w(), h()-0, "FLTK widget table");
+    m_pTskTable->end();
 
-	resizable(table);
+	resizable(m_pTskTable);
 }
 
 CTaskFrame::CTaskFrame(int w, int h, const char* title):Fl_Window(w,h,title)

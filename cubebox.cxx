@@ -5,7 +5,7 @@
 #include <GL/glut.h> 
 #include <FL/fl_draw.H>
 #include <FL/Fl_Text_Display.H>
-
+#include "include/macrodef.h"
 
 #if HAVE_GL
 cube_box::cube_box(int l, int t, int w, int h, const char* name)
