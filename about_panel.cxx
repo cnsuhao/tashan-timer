@@ -262,7 +262,7 @@ static void cb_View(Fl_Button*, void*) {
 }
 
 static void cb_Close(Fl_Return_Button* o, void*) {
-  ((Fl_Window*)(o->parent()))->hide();
+  about_panel->hide();
 }
 //#include "ui/mainicon.cxx"//extern const unsigned char main_png[];
 #include "ui/imgdata.h"                            
@@ -284,6 +284,15 @@ Fl_Double_Window* make_about_panel() {
         png = (Fl_PNG_Image*)new Fl_RGB_Image(main_png,96,96,4);  
         o->image(png);   
     } // Fl_Box* o
+
+    Fl_Group *grp = new Fl_Group(135, 25, about_panel->w()-135, 35, 0,false);
+    
+    Fl_Box* oUrl = 0;
+    oUrl=new Fl_Box(135, 60, 200, 30, "https://github.com/yaolixing/tashan-timer");
+    oUrl->box(FL_BORDER_FRAME);
+    oUrl->align(Fl_Align(FL_ALIGN_WRAP|FL_ALIGN_INSIDE|FL_ALIGN_LEFT|FL_ALIGN_CLIP));
+        
+    grp->end();
     { Fl_Box* o = new Fl_Box(135, 10, 205, 75,0);
       o->color((Fl_Color)12);
       o->selection_color(FL_DARK1);
@@ -291,7 +300,7 @@ Fl_Double_Window* make_about_panel() {
       o->labelsize(18);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       char about[80]; // uses less than 60
-      snprintf(about,sizeof(about),"跨平台定时软件\nVer 1.0.0.7");
+      snprintf(about,sizeof(about),"跨平台开源定时软件\nVer 1.0.0.7");
       o->copy_label(about);
     } // Fl_Box* o
     { Fl_Box* o = new Fl_Box(135, 90, 200, 45, "By lixing yao\n2016");
@@ -302,11 +311,21 @@ Fl_Double_Window* make_about_panel() {
         //o->labelcolor(FL_DARK_BLUE);
         //o->callback((Fl_Callback*)cb_View);
     } // Fl_Button* o
-    { Fl_Return_Button* o = new Fl_Return_Button(250, 145, 83, 25, "Close");
-      o->callback((Fl_Callback*)cb_Close);
-    } // Fl_Return_Button* o
+    {
+        Fl_Group *grp = new Fl_Group(135, 145, about_panel->w()-135, 25, 0,false);
+        Fl_Group *grp0 = new Fl_Group(135, 145, 250-135, 25, 0,0);
+        grp0->end();
+        
+        Fl_Return_Button* oOk = new Fl_Return_Button(250, 145, 63, 25, "Close");
+        oOk->callback((Fl_Callback*)cb_Close);
+        grp->end();
+        grp->resizable(grp0);
+    }
+     // Fl_Return_Button* o
     about_panel->set_non_modal();
     about_panel->end();
+    
+    about_panel->resizable(grp);
   } // Fl_Double_Window* about_panel
   return about_panel;
 }

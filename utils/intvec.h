@@ -48,6 +48,25 @@
         size(_size-1);
         return tmp;
     }
+    void swap(int a, int b)
+    {
+        long l = arr[a];
+        arr[a] = arr[b];
+        arr[b] = l;
+    }
+    void insert(long val, int before)
+    {
+        if(before >= (int)_size)
+        {
+            push_back(val);
+            return;
+        }
+        if(before<0) before=0;
+        size(_size+1);
+        
+        memcpy(arr + before +1 , arr + before, (_size-1 - before) * sizeof(long));
+        arr[before] = val;        
+    }
     long pop_back() { long tmp = arr[_size-1]; _size--; return(tmp); }
     void push_back(long val) { unsigned int x = _size; size(_size+1); arr[x] = val; }
     long back() { return(arr[_size-1]); }

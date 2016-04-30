@@ -9,6 +9,8 @@
 #include <FL/Fl_Group.H>
 #include <FL/fl_ask.H>
 
+class CTskTimer;
+
 class CTaskRow:public Fl_Group
 {
  public:
@@ -22,6 +24,9 @@ class CTaskRow:public Fl_Group
     int handle(int event);
     bool m_bMouseEnter;
     virtual void draw();
+
+    Fl_Image* m_icons;
+    CTskTimer* m_pTskTimer;
 };
 
 

@@ -30,7 +30,7 @@ class CMainFrame:public Fl_Double_Window{
     CMainFrame(int x, int y, int w, int h, const char* title = 0);
     void resize(int,int,int,int);
     void draw();
-    int  handle(int event);
+    virtual int  handle(int event);
     void show(int a, char **b);
     void flush(){Fl_Double_Window::flush();};
     Fl_Sys_Menu_Bar *menubar_;

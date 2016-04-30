@@ -237,6 +237,9 @@ void CNewTaskFrame::Init()
 	pGrp->end();
 	end();
 	pCurrTimeBtn->do_callback((Fl_Widget*)pCurrTimeBtn,(void*)pBtn);
+
+	set_modal();
+	begin();
 } 
 
 CNewTaskFrame::CNewTaskFrame(int w, int h, const char* title):Fl_Window(w,h,title)

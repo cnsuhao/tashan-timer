@@ -6,8 +6,8 @@
 
 XPoint CTaskRow::unitWHs[]={
     {28,28},//目录树展开收缩图标
-    {187,26},//任务名称
-    {190,26},//剩余时间
+    {187,31},//任务名称
+    {190,31},//剩余时间
     {28,28},//增加任务图标
     {28,28},//增加子任务图标
     {28,28},//暂停图标
@@ -34,12 +34,14 @@ int unitWHCount = sizeof(CTaskRow::unitWHs)/sizeof(CTaskRow::unitWHs[0]);
 CTaskRow::CTaskRow(int x, int y, int w, int h, const char *l,bool b) : Fl_Group(x,y,w,h,l,b)
 {
     m_bMouseEnter = false;
+    m_pTskTimer = 0;
+    m_icons=0;
 }
 
 int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* btnsStruc)
 {
 	int X=pX, Y=pY,H=nLineH;
-    int hOffset = 5;
+    int hOffset = 0;
 	begin();
 	//at first I set width to max, at last I readjust row width
 	Fl_Group * group1 = new Fl_Group(X, Y, w()-2*X, H-hOffset, "",0);
@@ -64,7 +66,9 @@ int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* 
 	tskLeft->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 	tskLeft->position(tskLeft->x(), Y+(butt->h() - tskLeft->h())/2);
 
-	Fl_Image* icons = (Fl_Image*)new Fl_RGB_Image(edit_png,144,36,4);
+    if(!m_icons)
+	   m_icons = (Fl_Image*)new Fl_RGB_Image(edit_png,144,36,4);
+    
 	Fl_Image* acIcon = 0;
 	X += tskLeft->w() +  CTaskRow::unitSpaces[2].x;
 
@@ -74,14 +78,15 @@ int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* 
 		nIconWidths +=  CTaskRow::unitWHs[i].x  +  CTaskRow::unitSpaces[i].x;
 	}
 
-	Fl_Group* pIconsGroup = new Fl_Group(X, Y+2, nIconWidths,33-hOffset-2,"",1);
+    Y+= 2;
+	Fl_Group* pIconsGroup = new Fl_Group(X, Y, nIconWidths,33-hOffset-2,"",1);
 	for(int i=3,j=0;i<10;i++,j++)
 	{
-		butt = new Fl_Button(X, Y,CTaskRow::unitWHs[i].x, CTaskRow::unitWHs[i].y);
+		butt = new Fl_Button(X+1, Y+3,CTaskRow::unitWHs[i].x, CTaskRow::unitWHs[i].y);
 		butt->box(FL_NO_BOX);
 		butt->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
 
-		acIcon = CUtil::copy(icons,btnsStruc[j].pt.x,btnsStruc[j].pt.y,18,18);
+		acIcon = CUtil::copy(m_icons,btnsStruc[j].pt.x,btnsStruc[j].pt.y,18,18);
         
 		butt->image(acIcon);
 		butt->tooltip(btnsStruc[j].tips);
@@ -112,7 +117,7 @@ void CTaskRow::draw()
     if(m_bMouseEnter)
     {
         fl_color(2);
-        fl_rect(x()+1,y()+5,w()-2,h()-5);
+        fl_rect(x()+1,y(),w()-2,h());
     }
 }
 

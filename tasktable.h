@@ -29,9 +29,14 @@ public:
   Fl_Image *rowImg;
   CTaskRow* BuildTskRow(int& yOffset, CTskTimer* pTskTimer);
   static void OnAddRow(Fl_Widget *w, void *);
+  static void OnMoveUpDown(Fl_Widget *w, void *);
+  static void OnEditRow(Fl_Widget*,void*);  
   static void OnDelRow(Fl_Widget*,void*);
-  CTskTimerMgr* m_pTskTimerMgr;
+  static void OnTskPause(Fl_Widget*,void*);
   
+  CTskTimerMgr* m_pTskTimerMgr;
+  int m_nRowsHeightTotal;
+  void swapRow(CTaskRow* a, CTaskRow* b);  
 private:
   //int BuildRow(int nRow);
 

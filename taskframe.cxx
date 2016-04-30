@@ -43,12 +43,82 @@ void CTaskFrame::BuildUI()
 
 void CTaskFrame::Init()
 {
+	m_scr=new Fl_Scroll(0,0,w(),h());
+	m_scr->begin();
     m_pTskTable=new CTaskTable(0, 0, w(), h()-0, "FLTK widget table");
     m_pTskTable->end();
+
+	m_scr->end();
 
 	resizable(m_pTskTable);
 }
 
+//return scrollbar's py
+int CTaskFrame::getVscrollbarYpos()
+{
+    int H=h();
+	if(m_pTskTable->m_nRowsHeightTotal > H)
+	{
+       return m_scr->yposition();
+	}
+    return 0;
+}
+
+void CTaskFrame::AdjustTskTableHeight()
+{
+    int W=w(),  H=h();
+	//if w less than 605,then don't resize
+	static Fl_Widget* pResize =m_pTskTable->resizable();
+
+	//if all row's height count of m_pTskTable > h()
+	//then scroll bar will show
+    int nVScrollbarW =0;
+	if(m_pTskTable->m_nRowsHeightTotal > H )
+	{
+       // vscroll will show
+       nVScrollbarW = m_scr->scrollbar.w();
+	}
+
+int nHScrollbarH = 0;
+if(W<605)
+{
+   //hscroll will show
+   nHScrollbarH = m_scr->hscrollbar.h();
+}
+
+m_pTskTable->resize(0,
+                    0,
+                    max(605,W-nVScrollbarW-1),
+                    max(H-nHScrollbarH,m_pTskTable->m_nRowsHeightTotal));
+
+pResize->resize(1,m_pTskTable->h()-35,m_pTskTable->w()-2,35);
+ 
+
+ 
+#if 0
+	if(W<605)
+	{
+		if(m_pTskTable->resizable()) pResize = m_pTskTable->resizable();
+		m_pTskTable->resizable(0);
+	}else
+	{
+		m_pTskTable->resizable(pResize);
+	}
+#endif
+    
+m_pTskTable->redraw();
+    redraw();
+}
+
+#if 1
+void CTaskFrame::resize(int X, int Y, int W, int H)
+{
+    Fl_Window::resize(X,Y,W,H);
+AdjustTskTableHeight();
+
+}
+
+#endif
 CTaskFrame::CTaskFrame(int w, int h, const char* title):Fl_Window(w,h,title)
 {
     Init();

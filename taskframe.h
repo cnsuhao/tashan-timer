@@ -14,8 +14,9 @@
 #include <FL/Fl_Image_Surface.H>
 #include <FL/Fl_Gl_Window.H>
 #include <FL/Fl_Browser.H>
+#include <FL/Fl_Browser_.H>
 #include <FL/fl_ask.H>
-
+#include <FL/Fl_Scroll.H>
 
 class CTaskTable;
 
@@ -28,6 +29,8 @@ public:
     int  handle(int event);
     void BuildUI();
     CTaskTable* m_pTskTable;
-    
-
+    virtual void resize(int x, int y, int w, int h);
+    Fl_Scroll *m_scr;
+    void AdjustTskTableHeight();
+    int getVscrollbarYpos();
 };
