@@ -45,6 +45,7 @@ void about_cb(Fl_Widget *o, void * param)
          pThis->pTskAddFrame = new CNewTaskFrame(345, 475, "新建定时任务");
       }
       pWnd = pThis->pTskAddFrame;
+      pWnd->label("新建定时任务");
   }else if(strcmp(s,"about")==0)
   {
       if (!about_panel) make_about_panel();

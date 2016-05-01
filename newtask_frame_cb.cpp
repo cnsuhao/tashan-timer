@@ -80,6 +80,7 @@ void startdate_cb(Fl_Widget* wid, void *data)
         oY->activate(),oMon->activate(),oD->activate();
         oH->activate(),oMin->activate(),oS->activate();      
     }
+    ((Fl_Button*)wid)->value(1);    
 }
 
 void doscheme(Fl_Choice *c, void *) {

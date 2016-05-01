@@ -13,6 +13,10 @@
 #define OUT
 #endif
 
+#ifndef USE_VARIABLE
+#define USE_VARIABLE(x) (void)(x)
+#endif
+
 #ifdef _WIN32
 
 #ifndef _ULONGLONG_
@@ -51,6 +55,16 @@ typedef  unsigned long ULONG_PTR, *PULONG_PTR;
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
+#endif
+
+#if defined(DEBUG) || defined(_DEBUG)
+#ifndef fl_assert
+#define fl_assert(__x) assert(__x)
+#endif
+#else
+#ifndef fl_assert
+#define fl_assert(__x) 
+#endif
 #endif
 
 #ifndef min 

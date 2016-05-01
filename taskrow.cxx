@@ -34,6 +34,7 @@ int unitWHCount = sizeof(CTaskRow::unitWHs)/sizeof(CTaskRow::unitWHs[0]);
 CTaskRow::CTaskRow(int x, int y, int w, int h, const char *l,bool b) : Fl_Group(x,y,w,h,l,b)
 {
     m_bMouseEnter = false;
+    m_bLeftBtnDown = false;
     m_pTskTimer = 0;
     m_icons=0;
 }
@@ -86,7 +87,7 @@ int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* 
 		butt->box(FL_NO_BOX);
 		butt->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
 
-		acIcon = CUtil::copy(m_icons,btnsStruc[j].pt.x,btnsStruc[j].pt.y,18,18);
+		acIcon = nsYLX::CUtil::copy(m_icons,btnsStruc[j].pt.x,btnsStruc[j].pt.y,18,18);
         
 		butt->image(acIcon);
 		butt->tooltip(btnsStruc[j].tips);
@@ -114,8 +115,14 @@ CTaskRow::~CTaskRow()
 void CTaskRow::draw()
 {
     Fl_Group::draw();
-    if(m_bMouseEnter)
+    
+    if(m_bLeftBtnDown)
     {
+        fl_color(4);
+        fl_rect(x()+1,y(),w()-2,h());
+    }else if(m_bMouseEnter)
+    {
+        // Fl_Color col = color();
         fl_color(2);
         fl_rect(x()+1,y(),w()-2,h());
     }
@@ -134,6 +141,27 @@ int CTaskRow::handle(int event)
           m_bMouseEnter = true;
           redraw();
       }
+      break;
+  default:
+      if(fl_xevent)
+      {
+          if (fl_xevent->xbutton.button == 1)
+          {
+              CTaskTable *pTskTable = (CTaskTable*)parent();
+              
+              for(int i=0,nCount=pTskTable->children()-1;i<nCount;i++)
+              {
+                  CTaskRow* pRow = (CTaskRow*)pTskTable->child(i);
+                  pRow->m_bLeftBtnDown=false;
+                  //pRow->redraw();
+              }//for
+              //fl_alert("FL_BTNDOWN");
+              m_bLeftBtnDown = true;
+              pTskTable->redraw();
+          }
+          //printf("%d,%d,%d\n",fl_xevent->type,fl_xevent->xbutton.type, fl_xevent->xbutton.button);
+      }
+      break;
   }
   return Fl_Group::handle(event);
 }

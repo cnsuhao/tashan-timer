@@ -13,8 +13,9 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <unistd.h> 
+#include <unistd.h>
+#include "auto_tchar.h"
 #endif
 
 #include <string.h>
-
+#include "macrodef.h"

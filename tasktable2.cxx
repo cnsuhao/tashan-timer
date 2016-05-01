@@ -8,9 +8,10 @@
 #include "ui/imgdata.h"
 #include "utils/utils.h"
 #include <FL/fl_ask.H>
+#include "newtask_frame.h"
+#include "mainframe.h"
 
 extern CBtnStruc btnsStruc[];
-
 
 CTaskRow* CTaskTable::BuildTskRow(int& yOffset, CTskTimer* pTskTimer)
 { 
@@ -85,17 +86,18 @@ void CTaskTable::OnTskPause(Fl_Widget *w, void *)
 
 	if((*nState)&PAUSE)
 	{
-		acIcon = CUtil::copy(oRow->m_icons,btnsStruc[7].pt.x, btnsStruc[7].pt.y,18,18);
+		acIcon = nsYLX::CUtil::copy(oRow->m_icons,btnsStruc[7].pt.x, btnsStruc[7].pt.y,18,18);
 		*nState &= ~PAUSE;
 		*nState |= RUNNING;
 	}else
 	{
-		acIcon = CUtil::copy(oRow->m_icons,btnsStruc[4].pt.x, btnsStruc[4].pt.y,18,18);
+		acIcon = nsYLX::CUtil::copy(oRow->m_icons,btnsStruc[4].pt.x, btnsStruc[4].pt.y,18,18);
 		*nState &= ~RUNNING;
 		*nState |= PAUSE;
 	}
 	w->image(acIcon);
 }//OnTskPause
+
 void CTaskTable::OnAddRow(Fl_Widget *w, void *)
 {
     CTaskRow* oRow = (CTaskRow*)w->parent()->parent()->parent();
@@ -104,9 +106,6 @@ void CTaskTable::OnAddRow(Fl_Widget *w, void *)
 	int nLine = pThis->find(oRow);
 
     const int nLineSpace = 5;
-
-//Fl_Widget* pResize = pThis->resizable();
-//pThis->resizable(0);
 
     pThis->m_nRowsHeightTotal += oRow->h()+nLineSpace;
     pTskFrame->AdjustTskTableHeight();
@@ -140,15 +139,37 @@ void CTaskTable::OnAddRow(Fl_Widget *w, void *)
 	}
 
 	pThis->vtRows.insert((long)oNewRow, nLine+1);
-
-//pThis->resizable(pResize);
     pTskFrame->AdjustTskTableHeight();
-//pThis->redraw();
+
 }//OnAddRow
 
 void CTaskTable::OnEditRow(Fl_Widget *w, void *)
 {
+    CTaskRow* oRow = (CTaskRow*)w->parent()->parent()->parent();
+	CTaskTable* pThis = (CTaskTable*)oRow->parent();
+    CTaskFrame* pTskFrame =(CTaskFrame*)pThis->parent()->parent();
+    CMainFrame* pMainFrame = (CMainFrame*)pTskFrame->parent()->parent();
+    float nScreenW = pMainFrame->w();
+    float nScreenH = pMainFrame->h();
+  
+    if(!pMainFrame->pTskAddFrame)
+    { 
+       pMainFrame->pTskAddFrame = new CNewTaskFrame(345, 475, "编辑任务");
+       pMainFrame->pTskAddFrame->end();       
+    }
+       
+  CNewTaskFrame*  pWnd = pMainFrame->pTskAddFrame;
+  pWnd->label("编辑任务");
+  int winW=pWnd->w(),winH=pWnd->h();
 
+  int dx = (nScreenW-winW)/2 + pMainFrame->x();
+  int dy = (nScreenH-winH)/2 + pMainFrame->y();
+  pWnd->position(dx,dy);
+  
+  //reset  ctrl's content of pTskAddFrame
+  pWnd->BuildTskEditWnd(oRow->m_pTskTimer);
+  
+  pWnd->show(); 
 }
 
 void CTaskTable::OnDelRow(Fl_Widget *w, void *)
@@ -174,11 +195,8 @@ void CTaskTable::OnDelRow(Fl_Widget *w, void *)
 		oNext = (CTaskRow*)pThis->child(i);
 		oNext->position(oNext->x(),oNext->y()-oRow->h()-nLineSpace);
 	}
-//Fl_Group *rzGroup= (Fl_Group*)pThis->resizable();
-//rzGroup->position(rzGroup->x(),rzGroup->y() - oRow->h()-nLineSpace);
 
     pThis->m_nRowsHeightTotal -= oRow->h()+nLineSpace;
-pTskFrame->AdjustTskTableHeight();
-//pThis->redraw();
+	pTskFrame->AdjustTskTableHeight();
 }
 

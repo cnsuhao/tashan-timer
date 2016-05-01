@@ -27,7 +27,7 @@ public:
 	bool DelTskTimer(IN BYTE* psXml);
 	bool DelTskTimerById(int nId);
     
-    void BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, IN int n);
+    void BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams*& p, IN int n);
 	void XmlNodeToTsk(xmlDocPtr doc, IN  xmlNodePtr ndTsk,IN OUT CTskTimer* p);
 
 	void ParseXml(BYTE* psXml);

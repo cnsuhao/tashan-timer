@@ -23,6 +23,7 @@ class CTaskRow:public Fl_Group
     int BuildRow(const int pX, const int pY, const int nLineH,struct CBtnStruc* );
     int handle(int event);
     bool m_bMouseEnter;
+    bool m_bLeftBtnDown;
     virtual void draw();
 
     Fl_Image* m_icons;

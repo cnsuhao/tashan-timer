@@ -51,6 +51,8 @@ void CTaskFrame::Init()
 	m_scr->end();
 
 	resizable(m_pTskTable);
+
+	AdjustTskTableHeight();
 }
 
 //return scrollbar's py
@@ -79,46 +81,30 @@ void CTaskFrame::AdjustTskTableHeight()
        nVScrollbarW = m_scr->scrollbar.w();
 	}
 
-int nHScrollbarH = 0;
-if(W<605)
-{
-   //hscroll will show
-   nHScrollbarH = m_scr->hscrollbar.h();
-}
-
-m_pTskTable->resize(0,
-                    0,
-                    max(605,W-nVScrollbarW-1),
-                    max(H-nHScrollbarH,m_pTskTable->m_nRowsHeightTotal));
-
-pResize->resize(1,m_pTskTable->h()-35,m_pTskTable->w()-2,35);
- 
-
- 
-#if 0
+	int nHScrollbarH = 0;
 	if(W<605)
 	{
-		if(m_pTskTable->resizable()) pResize = m_pTskTable->resizable();
-		m_pTskTable->resizable(0);
-	}else
-	{
-		m_pTskTable->resizable(pResize);
+	   //hscroll will show
+	   nHScrollbarH = m_scr->hscrollbar.h();
 	}
-#endif
-    
-m_pTskTable->redraw();
+
+	m_pTskTable->resize(0,
+						0,
+						max(605,W-nVScrollbarW),
+						max(H-nHScrollbarH,m_pTskTable->m_nRowsHeightTotal));
+
+	pResize->resize(1,m_pTskTable->h()-35,m_pTskTable->w()-2,35);
+
     redraw();
 }
 
-#if 1
+
 void CTaskFrame::resize(int X, int Y, int W, int H)
 {
     Fl_Window::resize(X,Y,W,H);
-AdjustTskTableHeight();
-
+	AdjustTskTableHeight();
 }
 
-#endif
 CTaskFrame::CTaskFrame(int w, int h, const char* title):Fl_Window(w,h,title)
 {
     Init();

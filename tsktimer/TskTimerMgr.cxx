@@ -197,7 +197,7 @@ void CTskTimerMgr::StartTimerTsk(CListHead* plistEntry)
 	}//for
 }//StartTimerTsk
 
-void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams* p, IN int n)
+void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams*& p, IN int n)
 {
     if(!nd) return;
     

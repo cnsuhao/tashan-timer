@@ -26,15 +26,15 @@ CTaskTable::CTaskTable(int X, int Y, int W, int H, const char* L) : Fl_Group(X,Y
         vtRows.push_back((long)oRow);
 	}//for
     if(oRow) m_nRowsHeightTotal = oRow->y() + oRow->h();
-end();
+	end();
 
     begin();
 	Fl_Group *group3 = new Fl_Group(0, yOffset, w()-0, 35, 0,1);
     resizable(group3);
-end();
+	end();
 
-m_nRowsHeightTotal+= 40;
-begin();
+	m_nRowsHeightTotal+= 40;
+	begin();
 }
 
 CTaskTable::~CTaskTable()
