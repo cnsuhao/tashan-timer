@@ -29,8 +29,12 @@ CTaskTable::CTaskTable(int X, int Y, int W, int H, const char* L) : Fl_Group(X,Y
 	end();
 
     begin();
-	Fl_Group *group3 = new Fl_Group(0, yOffset, w()-0, 35, 0,1);
-    resizable(group3);
+	Fl_Group *gp3 = new Fl_Group(0, yOffset, w()-0, 35, 0,0);
+    resizable(gp3);
+    gp3->box(FL_NO_BOX);
+    BuildTskRow(yOffset, 0);
+    gp3->end();
+    gp3->hide();
 	end();
 
 	m_nRowsHeightTotal+= 40;
@@ -58,30 +62,21 @@ CBtnStruc btnsStruc[]={
         {{2+18*7,18},"删除",&CTaskTable::OnDelRow},
         {{2+18*5,18},"启动",&CTaskTable::OnTskPause},            
 };
- 
-void CTaskTable::SetSize(int newrows)
+
+int CTaskTable::GetSelRow()
 {
-    int yOffset =0;
-    
-    begin();
-    CTaskRow* oRow =  0;
-    for(int r=0;r<newrows;r++)
+    int i=0,nCount = children()-1;
+    CTaskRow* pRow=0;
+    for(;i<nCount;i++)
     {
-        oRow =  new CTaskRow(0, yOffset,w(), 35,"",0);
-        yOffset=oRow->BuildRow(0, yOffset+5, 35, btnsStruc);
-        oRow->end();
-        vtRows.push_back((long)oRow);      
+        pRow = (CTaskRow*)child(i);
+        if(!pRow || pRow->m_bLeftBtnDown) break;
     }
-	end();
+
+    if(nCount == 0) i=-1;
     
-    yOffset += 14;
-    
-    begin();
-    Fl_Group *group3 = new Fl_Group(0, yOffset, w()-0, 35, 0,1);
-    resizable(group3);
-    group3->end();
-    end();
-}//SetSize
+    return i;
+}
 
 void CTaskTable::draw()
 {

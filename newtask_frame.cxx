@@ -16,6 +16,7 @@
 
 void CNewTaskFrame::Init()
 {
+    m_pTskTimer=0;
 	dragbox *box = new dragbox(0,0, w(), h());
 	box->box(FL_NO_BOX);
 
@@ -32,7 +33,7 @@ void CNewTaskFrame::Init()
 	py = pBox->y() + pBox->h() +2;
 	Fl_Group* btnsGrp = new Fl_Group(px,py, w(), 20,"",0);
 
-	Fl_Radio_Round_Button* pBtn = new Fl_Radio_Round_Button(px,py, 150, 20, "当前");pBtn->set();pBtn->callback(startdate_cb, pBtn); 
+	Fl_Radio_Round_Button* pBtn = new Fl_Radio_Round_Button(px,py, 150, 20, "立即执行");pBtn->set();pBtn->callback(startdate_cb, pBtn); 
 	Fl_Radio_Round_Button* pBtn2 = new Fl_Radio_Round_Button(pBtn->x()+pBtn->w()+5, py, 150, 20, "阳历");pBtn2->callback(startdate_cb, pBtn2);
 	btnsGrp->end();
 
@@ -114,15 +115,15 @@ void CNewTaskFrame::Init()
 	py += btnsGrp->h()+2;
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,50,25);pBox->box(FL_FLAT_BOX); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"天");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_offsetDIpt = pIpt;
+    m_offsetDIpt = pIpt;pIpt->value("0");
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,50,25);pBox->box(FL_FLAT_BOX); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"时");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_offsetHIpt = pIpt;
+    m_offsetHIpt = pIpt;pIpt->value("0");
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,30,25); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"分");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_offsetMIpt = pIpt;
+    m_offsetMIpt = pIpt;pIpt->value("0");
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,30,25); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"秒");pBox->box(FL_FLAT_BOX);
-    m_offsetSIpt = pIpt;
+    m_offsetSIpt = pIpt;pIpt->value("0");
 	pGrp->end();
 
 	//frequency 
@@ -145,7 +146,7 @@ void CNewTaskFrame::Init()
 	px += pBox->w()+1;
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py, 60,25);
 	px += pIpt->w()+1;
-    m_exectimesIpt = pIpt;
+    m_exectimesIpt = pIpt;pIpt->value("1");
 	pBox = new Fl_Box(px,py,180,20," 次(-1表示无限次)");
 	pBox->labeltype(FL_NORMAL_LABEL);
 	pBox->box(FL_FLAT_BOX);
@@ -163,7 +164,7 @@ void CNewTaskFrame::Init()
 	pBtn = new Fl_Radio_Round_Button(px,py, 50, 20);pBtn->set();
 	px += pBtn->w()+2;
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,50,25);pBox->box(FL_FLAT_BOX); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"月");pBox->box(FL_FLAT_BOX);
-    m_intvlMonIpt=pIpt;
+    m_intvlMonIpt=pIpt;pIpt->value("0");
 
 	px=1;
 	py += pBox->h()+2;
@@ -171,18 +172,18 @@ void CNewTaskFrame::Init()
 	px += pBtn->w()+2;
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,50,25);pBox->box(FL_FLAT_BOX); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"天");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_intvlDIpt=pIpt;
+    m_intvlDIpt=pIpt;pIpt->value("0");
     
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,50,25);pBox->box(FL_FLAT_BOX); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"时");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_intvlHIpt=pIpt;
+    m_intvlHIpt=pIpt;pIpt->value("0");
 
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,30,25); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"分");pBox->box(FL_FLAT_BOX);
 	px += pBox->w()+2;
-    m_intvlMinuIpt=pIpt;
+    m_intvlMinuIpt=pIpt;pIpt->value("0");
       
 	pIpt = (Fl_Input*)new Fl_Int_Input(px,py,30,25); px+= pIpt->w()+2; pBox = new Fl_Box(px,py,40, 30,"秒");pBox->box(FL_FLAT_BOX);
-    m_intvlSIpt=pIpt;  
+    m_intvlSIpt=pIpt;pIpt->value("0");  
     m_freqMRdo=pBtn, m_freqDRdo=pBtn2;
 	btnsGrp->end();
 	pGrp->end();
@@ -195,7 +196,7 @@ void CNewTaskFrame::Init()
 	pBox->align(FL_ALIGN_CLIP|FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 	px += pBox->w()+2;
 	pIpt = new Fl_Input(px,py,w()-px-2,25);
-    m_pTskNameIpt = pIpt;
+    m_pTskNameIpt = pIpt;pIpt->value("未命名");
     
 	//actions
 	px=1;py += pIpt->h()+2;
@@ -217,7 +218,7 @@ void CNewTaskFrame::Init()
 	}//for 
  
 	choice->callback((Fl_Callback *)actionChoice);
-	choice->value(0);
+	choice->value(6);
 	px=1;
 	py+= choice->h()+2;
     m_actionChoice = choice;
@@ -226,7 +227,7 @@ void CNewTaskFrame::Init()
 	btnsGrp->color(8);
 	pBox = new Fl_Box(px,py,40, 20,"文件:");px+=pBox->w()+1;
 	pIpt = new Fl_Input(px,py,220,25);px+=pIpt->w()+1;
-    m_exefnIpt=pIpt;
+    m_exefnIpt=pIpt;pIpt->value("");
  
 	Fl_Button* pNrBtn = new Fl_Button(px,py,50,25,"浏览...");px+=pNrBtn->w()+1;
 	pNrBtn->callback(fileChoose);
@@ -236,7 +237,7 @@ void CNewTaskFrame::Init()
 	pIpt = new Fl_Input(px,py,w()-px-2,25);px+=pIpt->w()+1; 
 	btnsGrp->end();
 	pGrp->end();
-    m_execmdlineIpt = pIpt;
+    m_execmdlineIpt = pIpt;pIpt->value("");
 
 	//ok or cancel
 	px=1;py = pGrp->y()+pGrp->h()+2;
@@ -244,8 +245,8 @@ void CNewTaskFrame::Init()
 	pGrp->color(3);
 	py+= 2;
 	px = w()-120; 
-	pNrBtn = new Fl_Button(px,py,40,25,"取消");pNrBtn->callback(ok_cb, 0); px+= pNrBtn->w()+30;
-	pNrBtn = new Fl_Button(px,py,40,25,"确定");pNrBtn->callback(ok_cb, 0); 
+	pNrBtn = new Fl_Button(px,py,40,25,"确定");pNrBtn->callback(ok_cb, (void*)this); px+= pNrBtn->w()+30;
+	pNrBtn = new Fl_Button(px,py,40,25,"取消");pNrBtn->callback(ok_cb, (void*)this); 
 
 	pGrp->end();
 	end();
@@ -253,7 +254,9 @@ void CNewTaskFrame::Init()
 
 	set_modal();
 	begin();
-} 
+    m_nRslt = -1;
+    
+}//Init() 
 
 CNewTaskFrame::CNewTaskFrame(int w, int h, const char* title):Fl_Window(w,h,title)
 {

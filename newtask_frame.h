@@ -50,6 +50,7 @@ public:
     //void draw();
     //int  handle(int event);
     void BuildTskEditWnd(IN CTskTimer* pTskTimer);
+    void UpdateTsk();
 	Fl_Radio_Round_Button* m_pCurrTimeRdo
 		, *m_psolarCalendarRdo
 		, *m_beforeRdo
@@ -71,4 +72,6 @@ public:
 
 	Fl_Choice *m_yearChoice,*m_monChoice,*m_dayChoice,*m_actionChoice;
 	Fl_Input* m_hourIpt,*m_minIpt,*m_secIpt,*m_exectimesIpt;
+    CTskTimer* m_pTskTimer;
+    int m_nRslt;//ok,cancle,close
 };

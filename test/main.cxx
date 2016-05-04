@@ -13,6 +13,11 @@
 #include "../tsktimer/TskTimer.h"
 #include "../tsktimer/TskTimerMgr.h"
 
+#include<unistd.h>
+#include<dirent.h>
+#include<string.h>
+#include<string>
+
 bool parseTsksNode(xmlDocPtr doc, xmlNodePtr tsksNd)
 {
     xmlNodePtr cur=0,pNode,pTsk;
@@ -79,9 +84,32 @@ bool loadTskXml(const char* resFile)
 }//loadTskXml
 
 int main(int argc, char** argv)
-{ 
+{
+    setlocale(LC_ALL, "");
+    #if 0
+    enum e{
+        E_ONE=(((unsigned int)0x1)<<1),
+        E_TWO,
+          };
+    wchar_t wc;
+    char c; 
+    printf("wchar:%ld, char: %ld\n",sizeof(wc), sizeof(c));
+
+ 
     CTskTimerMgr ttm;
     ttm.LoadTskXml("../task.xml");
+    #endif
+ char buff[1024];
+ memset(buff,0,sizeof(buff));
+ int n = readlink("/proc/self/exe",buff,1023);
+ if(n<0)
+ {
+  return -1;
+ }
+std::string path = buff;
+ int nLen = path.rfind('/')+1;
+ path.erase(nLen,path.length() - nLen);
+printf("%s\n", path.c_str());
     return 0;
 }
 

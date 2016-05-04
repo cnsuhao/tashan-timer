@@ -2,13 +2,15 @@
 
 #include"mainframe.h"
 #include <FL/fl_ask.H>
-
+#include "utils/utils.h" //CenterWnd
 #include "test/pixmaps/tile.xpm"
 #include "about_panel.h"
 #include "newtask_frame.h"
 #include "taskframe.h"
 #include <assert.h>
 #include "Fl_Drable_Window.h"
+#include "tsktimer/TskTimer.h"
+#include "tasktable.h"
 
 // This callback is invoked whenever the user clicks an item in the menu bar
 static void MyMenuCallback2(Fl_Widget *w, void *) {
@@ -32,33 +34,39 @@ static void MyMenuCallback2(Fl_Widget *w, void *) {
 void about_cb(Fl_Widget *o, void * param)
 {
   CMainFrame* pThis = (CMainFrame*)(o->parent());
-
-  float nScreenW = pThis->w();
-  float nScreenH = pThis->h();
   
   const  char* s = (char*)param;
-  Fl_Widget*  pWnd = 0;
+  Fl_Window*  pWnd = 0;
   if(strcmp(s,"newtsk")==0)
   {
-      if(!pThis->pTskAddFrame)
-      { 
-         pThis->pTskAddFrame = new CNewTaskFrame(345, 475, "新建定时任务");
-      }
-      pWnd = pThis->pTskAddFrame;
-      pWnd->label("新建定时任务");
+      if(pThis->pTskAddFrame) delete pThis->pTskAddFrame;
+      pThis->pTskAddFrame = new CNewTaskFrame(345, 475, "新建定时任务");
+      pWnd = (CNewTaskFrame*)pThis->pTskAddFrame;
+      
   }else if(strcmp(s,"about")==0)
   {
       if (!about_panel) make_about_panel();
       pWnd = about_panel;
+      
+      nsYLX::CUtil::CenterWnd(pWnd, pThis);
+      //pWnd->set_modal();
+      pWnd->show();
+      while(Fl::modal() == pWnd)
+      {
+          Fl::wait();
+      }
+      if(pWnd == about_panel) return;      
   }
   if(!pWnd) return;
-  int winW=pWnd->w(),winH=pWnd->h();
-  int dx = (nScreenW-winW)/2 + pThis->x();
-  int dy = (nScreenH-winH)/2 + pThis->y();
-  pWnd->position(dx,dy);
-  pWnd->show();
+
+  CTaskTable* pTskTbl = pThis->m_pTskFrame->m_pTskTable;
+  CTskTimer* pTskTimer= new CTskTimer;
+  int nCurrSel = pTskTbl->GetSelRow();
+  pTskTbl->AddRow(pThis->pTskAddFrame, pTskTimer, nCurrSel);
+
 }
 
+extern void newtsk_cb(Fl_Widget *w, void *);
 void cb(Fl_Widget *w, void *) { 
     fl_alert("you have press %s", w->label());
 }
@@ -92,10 +100,8 @@ void CMainFrame::Init()
 	box0->color(9);
 	box0->labelsize(36);
     box0->size_range(150, box0->h(), 0, 0);
-    size_range(150,1,0,0);//611 459
+    size_range(150,30,0,0);//611 459
 
-	Fl_Group *box0_g=new Fl_Group(25, 28, box0->w(), 20);
-	box0_g->box(FL_NO_BOX);
 
 	struct
 	{
@@ -103,13 +109,16 @@ void CMainFrame::Init()
 	  const char* name;
 	  Fl_Callback_p pfn;
 	} arBtns[] ={
-	  {0,  "关机...", cb},
-	  {35, "锁屏...", cb},
-	  {35, "待机...", cb},
-	  {35, "休眠...", cb},
-	  {35, "护眼...", cb},
+	  {0,  "关机...", newtsk_cb},
+	  {35, "锁屏...", newtsk_cb},
+	  {35, "待机...", newtsk_cb},
+	  {35, "休眠...", newtsk_cb},
+	  {35, "护眼...", newtsk_cb},
 	};
 
+	Fl_Group *box0_g=new Fl_Group(25, 28, box0->w(), 20+35*sizeof(arBtns)/sizeof(arBtns[0]));
+	box0_g->box(FL_NO_BOX);
+    
 	for(int i=0,ncount=sizeof(arBtns)/sizeof(arBtns[0]),dy=28;i<ncount;i++)
 	{
 	  dy += arBtns[i].dy;
@@ -117,23 +126,16 @@ void CMainFrame::Init()
 	  b->image(new Fl_Tiled_Image(new Fl_Pixmap((const char * const *)tile_xpm)));
 	  b->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE|FL_ALIGN_WRAP);
 	  b->callback(arBtns[i].pfn);
-	  
-	  box0_g->end();
-	}//for
 
-	box0_g->end();
+	}//for
 	box0->end();  
 	box0_g->resizable(*g);
 	dx=dy=0;
-
-	CTaskFrame *tskfrm=new CTaskFrame(150,MENUBARH,w()-150,h()-MENUBARH,"1");
+    m_pTskFrame=new CTaskFrame(150,MENUBARH,w()-150,h()-MENUBARH,"1");
 
     
-	tskfrm->box(FL_BORDER_FRAME);
-	tskfrm->size_range(350,100,0,0);
-    
-    tskfrm->end();
-
+	m_pTskFrame->box(FL_BORDER_FRAME);
+    m_pTskFrame->end();
 	tile->end();
 	end();
 

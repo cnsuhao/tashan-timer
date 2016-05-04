@@ -11,6 +11,8 @@
 
 class CTskTimer;
 
+#define LINEHEIGHT 35
+
 class CTaskRow:public Fl_Group
 {
  public:
@@ -20,6 +22,7 @@ class CTaskRow:public Fl_Group
 
     static XPoint unitWHs[];
     static XPoint unitSpaces[];
+    void UpdateUI();
     int BuildRow(const int pX, const int pY, const int nLineH,struct CBtnStruc* );
     int handle(int event);
     bool m_bMouseEnter;

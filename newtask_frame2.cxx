@@ -18,8 +18,8 @@
 void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
 {
 	if(!pTskTimer) return;
+    m_pTskTimer = pTskTimer;
 
-	m_pTskNameIpt->value(pTskTimer->m_pTskName);
 	CParams*   pTimeParam = pTskTimer->m_pTime;
     Fl_Button* pRdo=m_pCurrTimeRdo;
 	TCHAR** vtDays=0;
@@ -58,7 +58,7 @@ void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
 			M = _ttoi(vtDays[1]);
 			D = _ttoi(vtDays[2]);
 
-			m_yearChoice->value(Y);
+			m_yearChoice->value(Y-1900);
 			m_monChoice->value(M);
 			m_dayChoice->value(D);
 		}
@@ -105,9 +105,16 @@ void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
         }
 	}//if(pOffsetParam
 	CParams*   pFreqParam  = pTskTimer->m_pFreq;
+    m_exectimesIpt->value("1");
+	m_intvlMonIpt->value("0");
+	m_intvlDIpt->value("0");
+	m_intvlHIpt->value("0");
+	m_intvlMinuIpt->value("0");
+	m_intvlSIpt->value("0");
+       
 	if(pFreqParam)
 	{
-		m_exectimesIpt->value(pFreqParam->m_pParam0);
+		if(pFreqParam->m_pParam0) m_exectimesIpt->value(pFreqParam->m_pParam0);
 		if(pFreqParam->chType==0)
 		{
 			//months
@@ -119,23 +126,24 @@ void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
 		}
 		pRdo->value(1);
 		pRdo->setonly();
+        
 
-		//pFreqParam->m_pParam1 's format similar to  day.h:m:sec
-		int nCount =nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pFreqParam->m_pParam1, IN _T("."));
-		if(nCount==2)
+            
+		if(pFreqParam->chType==0)
 		{
-			if(pFreqParam->chType==0)
-			{
-				m_intvlMonIpt->value(vtDays[0]);
-				m_intvlHIpt->value("0");
-				m_intvlMinuIpt->value("0");
-				m_intvlSIpt->value("0");
-			}
-			else
+			//pFreqParam->m_pParam1 's format similar to "5589"
+			if(pFreqParam->m_pParam1) m_intvlMonIpt->value(pFreqParam->m_pParam1);
+		}
+		else
+        {
+			//pFreqParam->m_pParam1 's format similar to  day.h:m:sec
+			int nCount =nsYLX::CUtil::Split(OUT vtDays, IN 2, IN  pFreqParam->m_pParam1, IN _T("."));
+			if(nCount==2)
 			{
 				m_intvlDIpt->value(vtDays[0]);
 				int n = nsYLX::CUtil::Split(OUT vtHours, IN 3, IN  vtDays[1], IN _T(":"));
-
+				nsYLX::CUtil::ClearMemForSplit(vtDays, nCount);
+				
 				if(n==3)
 				{
 					m_intvlHIpt->value(vtHours[0]);
@@ -144,10 +152,11 @@ void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
 				}
 				nsYLX::CUtil::ClearMemForSplit(vtHours, n);
 			}
-			nsYLX::CUtil::ClearMemForSplit(vtDays, nCount);
-		}
+        }
 	}//if(pFreqParam)
-
+	if(pTskTimer->m_pTskName) m_pTskNameIpt->value(pTskTimer->m_pTskName);
+    else m_pTskNameIpt->value("未命名");
+    
 	if(pTskTimer->m_pActions)
 	{
 		for(int i=0,n=pTskTimer->m_nActionsCount;i<n;i++)
@@ -159,6 +168,7 @@ void CNewTaskFrame::BuildTskEditWnd(IN CTskTimer* pTskTimer)
 			//pActionParam->m_pParam2   exe's related filename
 			m_exefnIpt->value(pActionParam->m_pParam0);
 			m_execmdlineIpt->value(pActionParam->m_pParam1);
+            m_actionChoice->do_callback((Fl_Widget*)m_actionChoice, (void*)0);
 
 			break;//only dispaly the first task action
 		}//for

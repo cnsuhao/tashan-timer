@@ -14,6 +14,7 @@
 class CTaskRow;
 class CTskTimer;
 class CTskTimerMgr;
+class CNewTaskFrame;
 
 class CTaskTable:public Fl_Group
 { 
@@ -25,9 +26,11 @@ public:
   ~CTaskTable();
   CLongVector  vtRows;
 
-  void SetSize(int newrows);
+  int GetSelRow();
   Fl_Image *rowImg;
   CTaskRow* BuildTskRow(int& yOffset, CTskTimer* pTskTimer);
+  void HighLight(int n);
+  CTaskRow* AddRow(CNewTaskFrame*  pNewTskFrm, CTskTimer* pTskTimer, int nLine);
   static void OnAddRow(Fl_Widget *w, void *);
   static void OnMoveUpDown(Fl_Widget *w, void *);
   static void OnEditRow(Fl_Widget*,void*);  
@@ -36,9 +39,7 @@ public:
   
   CTskTimerMgr* m_pTskTimerMgr;
   int m_nRowsHeightTotal;
-  void swapRow(CTaskRow* a, CTaskRow* b);  
-private:
-  //int BuildRow(int nRow);
+  void swapRow(CTaskRow*& a, CTaskRow*& b);  
 
 };
 

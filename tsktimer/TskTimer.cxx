@@ -30,17 +30,17 @@ CParams::~CParams()
 { 
 	if (m_pParam0)
 	{
-		delete []m_pParam0;m_pParam0=0;
+	    free(m_pParam0);m_pParam0=0;
 	}
 
 	if (m_pParam1)
 	{
-		delete []m_pParam1;m_pParam1=0;
+	    free(m_pParam1);m_pParam1=0;
 	}
 
 	if (m_pParam2)
 	{
-		delete []m_pParam2;m_pParam2=0;
+	    free(m_pParam2);m_pParam2=0;
 	}
 }
 	
@@ -49,20 +49,19 @@ CParams::CParams(const CParams& other)
    *this = other;
 }
 
-void CParams::CopyParam(TCHAR*& pDes, TCHAR* pSrc)
+void CParams::CopyParam(TCHAR*& pDes,const TCHAR* pSrc)
 {
 	if (pSrc)
 	{
 		int nLen = _tcslen(pSrc)+1;
-		if (nLen >1)
+
+		if (!pDes) 
 		{
-			if (pDes)
-			{
-				delete[] pDes;
-			}
-			pDes =  new TCHAR[nLen];
-			_tcscpy(pDes, pSrc);
-		}
+			pDes = (TCHAR*)malloc(MAX_PATH*sizeof(TCHAR));
+		}else 
+			pDes = (TCHAR*)realloc(pDes, nLen*sizeof(TCHAR));
+		pDes[0]=0;
+		_tcscpy(pDes, pSrc);		
 	}
 }
 
@@ -79,7 +78,64 @@ CParams& CParams::operator=(const CParams& other)
 	return *this;
 }
 
+
 //////////////////////////////////////////////////////////////////
+void CTskTimer::ValidTime(int& val, ETIMETYPE e)
+{
+    if(IsValidTime(val,e)) return;
+    switch(e)
+    {
+    case ETT_YEAR:
+        val = 2016;
+        break;
+    case ETT_MONTH:
+        val = 6;
+        break;
+    case ETT_DAY:
+        val = 15;
+        break;
+    case ETT_HOUR:
+        val=7;
+        break;
+    case ETT_MINU:
+    case ETT_SEC:
+        val=30;
+        break;
+    }
+}
+
+
+bool CTskTimer::IsValidTime(int val, ETIMETYPE e)
+{
+    switch(e)
+    {
+    case ETT_YEAR:
+        return IsValidNum(val,1900,2050);
+        break;
+    case ETT_MONTH:
+        return IsValidNum(val,0,11);
+        break;
+    case ETT_DAY:
+        return IsValidNum(val,1,31);
+        break;
+    case ETT_HOUR:
+        return IsValidNum(val,0,23);
+        break;
+    case ETT_MINU:
+        return IsValidNum(val,0,59);
+        break;
+    case ETT_SEC:
+        return IsValidNum(val,0,60);//1 leap second
+        break;
+    }
+    return false;
+}
+
+bool CTskTimer::IsValidNum(int v, int minV, int maxV)
+{
+    return (v<=maxV && v>=minV);
+}
+////////////////////////////////////////////////////////////////
 CTskTimer::CTskTimer(void)
 {
 	m_pTskName = 0;

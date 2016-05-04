@@ -21,6 +21,8 @@
 
 
 #define MENUBARH 25
+class CTaskFrame;
+class CNewTaskFrame;
 
 class CMainFrame:public Fl_Double_Window{
  private:
@@ -37,6 +39,7 @@ class CMainFrame:public Fl_Double_Window{
     Fl_Group *pgroup;
     Fl_Tile *m_tile;
     CChildFrame * childframe;
-    class CNewTaskFrame* pTskAddFrame;
+    CNewTaskFrame* pTskAddFrame;
+    CTaskFrame    *m_pTskFrame;
     //Fl_Double_Window* make_newtskwnd();
 };

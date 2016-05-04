@@ -33,6 +33,11 @@ task-timer: $(OBJFILES)  $(SUBDIRS)
 	done
 	$(CXX) $(OBJFILES) $(LINKFLTK_ALL) -o $@
 
+%.cpp:
+#force update newtask_frame.o when newtask_frame_cb.cpp be changed.
+$(OBJ_PATH)newtask_frame.o:newtask_frame.cxx newtask_frame_cb.cpp
+	@echo "*** Compile cxx $<..."
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 $(OBJ_PATH)%.o:%.cxx
 	@echo "*** Compile cxx $<..."
 	$(CXX) $(CXXFLAGS) -c $< -o $@

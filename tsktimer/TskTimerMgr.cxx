@@ -11,7 +11,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include "../utils/intvec.h" //CLongVector
-
+#include "../utils/utils.h"
+#include "../include/auto_tchar.h"
+#include <time.h>
 
 #if defined(WIN32) && defined(_DEBUG)
 #define new DEBUG_NEW
@@ -175,6 +177,181 @@ bool CTskTimerMgr::StartSingleTimerTsk(CTskTimer* p)
 	{
 		return false;
 	}
+#if 0
+	CTimeSpan ts;
+	CTime   tmNow( 0 ),ct(0) ;
+	tmNow = CTime::GetCurrentTime();
+	int Y=0,M=0,D=0,y= tmNow.GetYear(),m= tmNow.GetMonth(),d=tmNow.GetDay(),h=tmNow.GetHour(),minu=tmNow.GetMinute(),sec=tmNow.GetSecond();
+#endif
+
+	time_t now;
+	struct tm *tmNow;
+	time(&now);
+	tmNow   =   localtime(&now);
+
+    int ntmp=0;
+	int Y=0,M=0,D=0,y= tmNow->tm_year,m= tmNow->tm_mon,d=tmNow->tm_mday,h=tmNow->tm_hour,minu=tmNow->tm_min,sec=tmNow->tm_sec;
+    
+	TCHAR** vtDays=0;
+	TCHAR** vtHours=0;
+
+	CParams*   pTime = p->m_pTime;
+	CParams*   pFreq = p->m_pFreq;
+	int nFreqTimes = 0;
+	LONGLONG   nElapse =0, llElapse=0;
+	TCHAR tchTmp[MAX_PATH];
+ 
+	if (!pTime)
+	{
+		//子任务中，该值为NULL.
+		pTime = new CParams();
+
+		_stprintf(tchTmp,_T("%d.%d.%d"), y, m, d);
+		CParams::CopyParam(pTime->m_pParam0, tchTmp);
+
+		_stprintf(tchTmp,_T("%d:%d:%d"), h, minu, sec);
+		CParams::CopyParam(pTime->m_pParam1, tchTmp);
+
+		p->m_pTime = pTime;
+	}
+
+	CParams*   pNextTrigTime = p->m_pNextTrigTime;
+	if (!pNextTrigTime)
+	{
+		//pNextTrigTime里的值，会在每次onTimer里面进行修改，并保存到XML里。
+		pNextTrigTime = new CParams(*pTime);
+	}
+ 
+	//获取XML中保存的，任务下次触发距今的总秒数
+	nElapse =  CTskTimerMgr::GetTimeEspase(p->m_pNextTrigTime);
+	bool bNextTrigTimeInvalid = false;
+	if (nElapse == -1)
+	{
+		//获取XML中保存的，任务触发时机距今的总秒数
+		nElapse =  CTskTimerMgr::GetTimeEspase(p->m_pTime);
+		if (nElapse == -1)
+		{
+			return false;
+		}
+		bNextTrigTimeInvalid = true;
+	} 
+
+	if (p->m_pNextTrigTime->chType == 0)
+	{
+		//对于即时闹钟，显然下次任务的时间是无效的
+		bNextTrigTimeInvalid = true;
+	}
+
+	do 
+	{
+		//获取时间偏移量,参数格式类似于 1.0:0:0
+		CParams*   pOffset = p->m_pOffset; 
+		int nOffsetDays = 0;
+
+		if (nElapse<0 || bNextTrigTimeInvalid)
+		{
+			//对于即时闹钟，或者下次触发时机没有正确记录时，我都需要累加下次时间偏移
+			llElapse =  CTskTimerMgr::GetOffsetEspase( pOffset);
+			nOffsetDays = llElapse/(24*60*60);
+
+			switch(pOffset->chType)
+			{
+			case 0:
+				//之前
+				nElapse -= llElapse;
+				nOffsetDays = -nOffsetDays;
+				break;
+			case 1:
+				//之后
+				nElapse += llElapse;
+				break;
+			}
+		}
+
+		//bNextTrigTimeInvalid只对第一次循环有用
+		bNextTrigTimeInvalid = true;
+
+		int nLoopTimes = 0;
+		int nTotalDays=0;
+
+		//获取执行频率参数。并据此重新设定计时任务 
+		llElapse  =  CTskTimerMgr::GetFreqEspase(pFreq, nElapse);
+
+		int nExecCount = _ttoi(pFreq->m_pParam0);
+
+		//此时 llElapse 存放了频率时段, 
+		if ( llElapse >0 && nElapse<0  )
+		{ 
+			//nExeCount ==1时，任务已经过期，所以必须大于1才处理。
+			if (nExecCount==-1)
+			{
+				nElapse = llElapse -  (-nElapse) % llElapse; 
+			}else
+			{
+				while( nExecCount>1 )
+				{
+					nElapse += llElapse;
+					if (nElapse>=0)
+					{
+						break;
+					}
+					nExecCount--;
+				}
+                #ifdef _WIN32
+				_itot(nExecCount, pFreq->m_pParam0, 10);
+                #else
+                CParams::CopyParam(pFreq->m_pParam0, l64a(nExecCount));                
+                //sprintf(pFreq->m_pParam0, "%d", nExecCount);
+                #endif
+			} 
+		} 
+
+		//y= tmNow.GetYear(),m= tmNow.GetMonth(),d=tmNow.GetDay(),h=tmNow.GetHour(),minu=tmNow.GetMinute(),sec=tmNow.GetSecond();
+        y= tmNow->tm_year,m= tmNow->tm_mon,d=tmNow->tm_mday,h=tmNow->tm_hour,minu=tmNow->tm_min,sec=tmNow->tm_sec;
+		CTskTimerMgr::GetDateNxtSecs(&y, &m, &d, &h, &minu, &sec, nElapse);
+
+		//ATLASSERT(ISVALIDDATE(y,m,d,h,minu,sec)); 
+	
+    
+		_stprintf(tchTmp,_T("%d.%d.%d"), y, m, d);
+		CParams::CopyParam(pNextTrigTime->m_pParam0, tchTmp);
+
+		_stprintf(tchTmp,_T("%d:%d:%d"), h, minu, sec);
+		CParams::CopyParam(pNextTrigTime->m_pParam1, tchTmp);
+		
+		p->m_llTotalElapse = nElapse;
+		if (nElapse<0)
+		{
+			//过期了
+			p->m_nState = EXPIRED;
+		}
+
+		//让主程序将剩余时间发送给HTML了。
+		//::PostMessage(m_hOwnWnd, ngUpdateLeftTimeMsg, p->m_nId,(LPARAM)0 );
+
+		if (nElapse > 3600*24 )
+		{
+			//超过一天的秒数，那么今天的任务就没有了，所以不需要执行
+			return false;
+		}
+
+		//::KillTimer(m_hOwnWnd,p->m_nId);
+ 
+		if (nElapse>=0)
+		{
+			//::SetTimer(m_hOwnWnd, p->m_nId, nElapse*1000, NULL);
+			//::PostMessage(m_hOwnWnd, ngTrigTskMsg, p->m_nId,(LPARAM)nElapse );
+		}else
+		{ 			
+			nElapse = -1;//过期的任务
+			//对于过期任务，我仍然让它进入onTimer,以便检测其是否有循环或者子任务。
+
+			p->m_nState |= EXPIRED;
+		}
+        
+ 		bRtn = true;
+        
+	} while (0);
 
 	return bRtn;
 }//StartSingleTimerTsk
@@ -217,24 +394,24 @@ void CTskTimerMgr::BuildParam(xmlDocPtr doc, IN xmlNodePtr nd, OUT CParams*& p, 
 		{
 		    p->chType  = atoi(key);
 		}else if (!xmlStrcmp(cur->name, (const xmlChar *)"Param0")
-		||!xmlStrcmp(cur->name, (const xmlChar *)"Param"))
+                ||!xmlStrcmp(cur->name, (const xmlChar *)"Param"))
 		{
-		    nLen =   strlen(key);
-		    if(!p->m_pParam0) p->m_pParam0 = new TCHAR[nLen+1];
+		    nLen =  max(MAX_PATH, (int)strlen(key));
+		    if(!p->m_pParam0) p->m_pParam0 = (TCHAR*)malloc(sizeof(TCHAR)*(nLen+1));
 		    _tcscpy(p->m_pParam0, key);
 		}else if (!xmlStrcmp(cur->name, (const xmlChar *)"Param1"))
 		{
-		    nLen =   strlen(key);
-		    if(!p->m_pParam1) p->m_pParam1 = new TCHAR[nLen+1];
+		    nLen =  max(MAX_PATH, (int)strlen(key));
+		    if(!p->m_pParam1) p->m_pParam1 = (TCHAR*)malloc(sizeof(TCHAR)*(nLen+1));
 		    _tcscpy(p->m_pParam1, key);
 		}else if (!xmlStrcmp(cur->name, (const xmlChar *)"Param2"))
 		{
-		    nLen =   strlen(key);
-		    if(!p->m_pParam2) p->m_pParam2 = new TCHAR[nLen+1];
+		    nLen =   max(MAX_PATH, (int)strlen(key));
+		    if(!p->m_pParam2) p->m_pParam2 = (TCHAR*)malloc(sizeof(TCHAR)*(nLen+1));
 		    _tcscpy(p->m_pParam2, key);
 		}     
-		xmlFree(xckey);
-	}//for
+        xmlFree(xckey);
+    }//for
 }
 
 void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTimer* p)
@@ -264,7 +441,7 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
             if(!xckey) continue;
             
             nLen = strlen((const char*)key);
-            p->m_pTskName = new TCHAR[nLen+1];
+            p->m_pTskName = (TCHAR*)malloc(sizeof(TCHAR)*(nLen+1));
             _tcscpy(p->m_pTskName,  (const char*)key);
 		}
 		else if (!xmlStrcmp(cur->name, (const xmlChar *)"Time"))
@@ -291,16 +468,17 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
                   p->m_pFreq->chType  = atoi((const char*)childKey);
               }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Times"))
                 {
-                //must use MAX_PATH，main program will reset it's content later.
-                p->m_pFreq->m_pParam0 = new TCHAR[MAX_PATH];
-                _tcsncpy(p->m_pFreq->m_pParam0
-                         , (const char*)childKey
-                         ,min((int)strlen((const char*)childKey)+1, (int)MAX_PATH));
-              }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Interval"))
+                    //must use MAX_PATH，main program will reset it's content later.
+                    nLen = min((int)strlen((const char*)childKey)+1, (int)MAX_PATH)+1;
+                    p->m_pFreq->m_pParam0 = (TCHAR*)malloc(sizeof(TCHAR)*nLen);
+                    _tcsncpy(p->m_pFreq->m_pParam0
+                             , (const char*)childKey
+                             ,nLen);
+                }else  if (!xmlStrcmp(pChild->name, (const xmlChar *)"Interval"))
                 {
-                nLen = strlen((const char*)childKey);
-                p->m_pFreq->m_pParam1 = new TCHAR[nLen+1];
-                _tcscpy(p->m_pFreq->m_pParam1, (const char*)childKey); 
+                    nLen = strlen((const char*)childKey)+1;
+                    p->m_pFreq->m_pParam1 = (TCHAR*)malloc(sizeof(TCHAR)*nLen);
+                    _tcscpy(p->m_pFreq->m_pParam1, (const char*)childKey);
                 }
               xmlFree(childKey);
             }//for            
@@ -313,9 +491,18 @@ void CTskTimerMgr::XmlNodeToTsk(xmlDocPtr doc, IN xmlNodePtr ndTsk,IN OUT CTskTi
                 if (xmlStrcmp(pChild->name, (const xmlChar *)"Action")) continue;
                 childKey = xmlNodeListGetString(doc, pChild->xmlChildrenNode, 1);
                 
-                CParams* pActionParams =  new CParams;
-                BuildParam(doc, IN pChild, OUT pActionParams, 1);
-                lv.push_back((long)pActionParams);
+                CParams* pAcParam =  new CParams;
+                BuildParam(doc, IN pChild, OUT pAcParam, 1);
+                //if pActionParams->m_pParam0's file not exist ,then I generate it's related fn
+                if(access(pAcParam->m_pParam0,0)==-1)
+                {
+                    if(!pAcParam->m_pParam2) pAcParam->m_pParam2 = (TCHAR*)malloc(MAX_PATH*sizeof(TCHAR));
+                    if(!nsYLX::CUtil::GetRelatedName(pAcParam->m_pParam0, pAcParam->m_pParam2, MAX_PATH*sizeof(TCHAR)))
+                    {
+                        pAcParam->m_pParam2[0]=0;
+                    }        
+                }                
+                lv.push_back((long)pAcParam);
                 
                 if(childKey) xmlFree(childKey);
             }//for

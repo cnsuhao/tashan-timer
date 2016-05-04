@@ -23,7 +23,7 @@ public:
 	 TCHAR* m_pParam1;
 	 TCHAR* m_pParam2; 
 
-	 static void CopyParam(TCHAR*& pDes, TCHAR* pSrc);
+	 static void CopyParam(TCHAR*& pDes, const TCHAR* pSrc);
 	 CParams& operator=(const CParams& other);
 };
 
@@ -45,6 +45,16 @@ enum TSKSTATE
 	PAUSE		=	((int)0x1)<<2,      //暂停
 	FORDELETE	=	((int)0x1)<<3,  //待删除
 	EXPIRED		=	((int)0x1)<<4     //过期
+};
+
+enum ETIMETYPE
+{
+    ETT_YEAR,
+    ETT_MONTH,
+    ETT_DAY,
+    ETT_HOUR,
+    ETT_MINU,
+    ETT_SEC
 };
 
 class CTskTimer
@@ -74,6 +84,9 @@ public:
 
 	static void Append(CListHead* pListHeader, CTskTimer* pTsk);
 	static void Del(CTskTimer* pTsk);
+    static void ValidTime(int& val, ETIMETYPE e);
+    static bool IsValidTime(int val, ETIMETYPE e);
+    static bool IsValidNum(int v, int minV, int maxV);
 
 	HANDLE      m_hPauseEvent;
 	void Lock();

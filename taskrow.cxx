@@ -3,6 +3,8 @@
 #include "ui/imgdata.h"
 #include "utils/utils.h"
 #include "tasktable.h"
+#include "tsktimer/TskTimer.h"
+#include "tsktimer/TskTimerMgr.h"
 
 XPoint CTaskRow::unitWHs[]={
     {28,28},//目录树展开收缩图标
@@ -39,6 +41,18 @@ CTaskRow::CTaskRow(int x, int y, int w, int h, const char *l,bool b) : Fl_Group(
     m_icons=0;
 }
 
+void CTaskRow::UpdateUI()
+{
+    if(!m_pTskTimer) return;
+    Fl_Group* fg = (Fl_Group*)child(0);
+    Fl_Button *butt = (Fl_Button*)fg->child(0);
+    Fl_Box* tskTitle= (Fl_Box*)fg->child(1);
+    tskTitle->label("");
+    tskTitle->copy_label(m_pTskTimer->m_pTskName);
+	Fl_Box* tskLeft = (Fl_Box*)fg->child(2);
+    redraw();
+}
+
 int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* btnsStruc)
 {
 	int X=pX, Y=pY,H=nLineH;
@@ -50,7 +64,7 @@ int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* 
 	//目录树展开收缩图标
 	Fl_Button *butt = new Fl_Button(X, Y,H-2,H-hOffset,"-");
 	butt->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
-	butt->color(12,14);
+	butt->color(9,12);
     butt->tooltip("展开");
 
 	//任务名称
@@ -106,7 +120,6 @@ int CTaskRow::BuildRow(const int pX, const int pY, const int nLineH, CBtnStruc* 
 	return group1->y()+group1->h();
 }
 
-
 CTaskRow::~CTaskRow()
 {
 
@@ -122,7 +135,6 @@ void CTaskRow::draw()
         fl_rect(x()+1,y(),w()-2,h());
     }else if(m_bMouseEnter)
     {
-        // Fl_Color col = color();
         fl_color(2);
         fl_rect(x()+1,y(),w()-2,h());
     }
@@ -130,38 +142,48 @@ void CTaskRow::draw()
 
 int CTaskRow::handle(int event)
 {
-  switch (event)
-  {
-  case FL_LEAVE:
-      m_bMouseEnter = false;
-      redraw();
-      break;
-  case FL_ENTER:
-      {
-          m_bMouseEnter = true;
-          redraw();
-      }
-      break;
-  default:
-      if(fl_xevent)
-      {
-          if (fl_xevent->xbutton.button == 1)
-          {
-              CTaskTable *pTskTable = (CTaskTable*)parent();
-              
-              for(int i=0,nCount=pTskTable->children()-1;i<nCount;i++)
-              {
-                  CTaskRow* pRow = (CTaskRow*)pTskTable->child(i);
-                  pRow->m_bLeftBtnDown=false;
-                  //pRow->redraw();
-              }//for
-              //fl_alert("FL_BTNDOWN");
-              m_bLeftBtnDown = true;
-              pTskTable->redraw();
-          }
-          //printf("%d,%d,%d\n",fl_xevent->type,fl_xevent->xbutton.type, fl_xevent->xbutton.button);
-      }
-      break;
-  }
-  return Fl_Group::handle(event);
+	switch (event)
+	{
+	case FL_LEAVE:
+	  m_bMouseEnter = false;
+	  redraw();
+	  break;
+	case FL_ENTER:
+	  {
+		  m_bMouseEnter = true;
+		  redraw();
+	  }
+	  break;
+	default:
+		if(fl_xevent)
+		{
+            XButtonEvent xbtn = fl_xevent->xbutton;
+            switch(xbtn.type)
+            {
+            case ButtonPressMask://ButtonReleaseMask:
+                switch(xbtn.button)
+                {
+                case Button1:
+                    {
+                        
+                    }    
+                    break;
+                }//sw3
+                break;
+            }//switch2
+            
+            if (xbtn.button == Button1 && (xbtn.type==ButtonRelease))
+			{
+				CTaskTable *pTskTable = (CTaskTable*)parent();
+				if(!pTskTable) break;
+                int nLine = pTskTable->find(this);
+                //printf("line:%d\n",nLine );
+                pTskTable-> HighLight(nLine);
+			}
+            //printf("state: %d, type: %d\n",xbtn.state, xbtn.type);
+		}
+		break;
+	}
+	return Fl_Group::handle(event);
 }
+

@@ -9,6 +9,7 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <sys/types.h>
+#include <time.h>
 #endif // WIN32
 
 
@@ -16,7 +17,8 @@
 #include "TskTimerMgr.h"
 
 #include "../utils/utils.h"
-//#include "../utils/calendar.h"
+#include "../include/auto_tchar.h"
+#include "../utils/Calendar.h"
 
 
 #if defined(WIN32) && defined(_DEBUG)
@@ -62,13 +64,21 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
  
 	TCHAR** vtDays=0;
 	TCHAR** vtHours=0;
-	
+
+	time_t now;
+	struct tm *tmNow;
+	time(&now);
+	tmNow   =   localtime(&now);
+
+    int ntmp=0;
+	int Y=0,M=0,D=0,y= tmNow->tm_year,m= tmNow->tm_mon,d=tmNow->tm_mday,h=tmNow->tm_hour,minu=tmNow->tm_min,sec=tmNow->tm_sec;
+    
 #if 0
 	CTimeSpan ts;
 	CTime   tmNow( 0 ),ct(0) ;
 	tmNow = CTime::GetCurrentTime();
 	int Y=0,M=0,D=0,y= tmNow.GetYear(),m= tmNow.GetMonth(),d=tmNow.GetDay(),h=tmNow.GetHour(),minu=tmNow.GetMinute(),sec=tmNow.GetSecond();
-
+#endif
 
 	if (!pTime)
 	{
@@ -96,7 +106,9 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		m = _ttoi(vtDays[1]);
 		d = _ttoi(vtDays[2]);
 		nsYLX::CUtil::ClearMemForSplit(vtDays,3);
-		if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
+
+        //if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
+        if (y != tmNow->tm_year && m != tmNow->tm_mon && d != tmNow->tm_mday)    
 		{
 			//闹钟不在今天，所以不做任何处理，呵呵
 			return -1;
@@ -123,7 +135,8 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			break;
 		} 
 
-		if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
+        //if (y != tmNow.GetYear() && m != tmNow.GetMonth() && d != tmNow.GetDay())
+        if (y != tmNow->tm_year && m != tmNow->tm_mon && d != tmNow->tm_mday)    
 		{
 			//闹钟不在今天，所以不做任何处理，呵呵
 			return -1;
@@ -160,12 +173,14 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			Y = _ttoi(vtDays[1]);
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 
-			if (!nsYLX::CCalendar::GetSolarDate( tmNow.GetYear(), _lunFestival[Y]._mon-1, _lunFestival[Y]._day, yTmp,mTmp,dTmp ))
+			//if (!nsYLX::CCalendar::GetSolarDate( tmNow.GetYear(), _lunFestival[Y]._mon-1, _lunFestival[Y]._day, yTmp,mTmp,dTmp ))
+            if (!nsYLX::CCalendar::GetSolarDate( tmNow->tm_year, _lunFestival[Y]._mon-1, _lunFestival[Y]._day, yTmp,mTmp,dTmp ))
 			{
 				break;
 			}
-
-			if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
+	
+            //if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
+            if (mTmp != tmNow->tm_mon && dTmp != tmNow->tm_mday)    
 			{
 				//今天不过节，所以不做任何处理，呵呵
 				return -1;
@@ -259,10 +274,11 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			Y = _ttoi(vtDays[1]);
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 
-			yTmp = tmNow.GetYear();
+            yTmp = tmNow->tm_year;//tmNow.GetYear();
 			mTmp = _SolarFestival[Y]._mon;
 			dTmp = _SolarFestival[Y]._day;
-			if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
+			//if (mTmp != tmNow.GetMonth() && dTmp != tmNow.GetDay())
+            if (mTmp != tmNow->tm_mon && dTmp != tmNow->tm_mday)
 			{
 				//今天不是节日，所以不做任何处理，呵呵
 				return -1;
@@ -282,7 +298,8 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		sec =0;
 		nsYLX::CCalendar::GetTermTime( y, Y,yTmp,mTmp,dTmp, hTmp,minuTmp );
 
-		if (mTmp != tmNow.GetMonth() &&dTmp != tmNow.GetDay())
+        //if (mTmp != tmNow.GetMonth() &&dTmp != tmNow.GetDay())
+        if (mTmp != tmNow->tm_mon &&dTmp != tmNow->tm_mday)
 		{
 			//今天不是节气，所以不做任何处理，呵呵
 			return -1;
@@ -300,8 +317,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 			h=nsYLX::CUtil::Split(OUT vtHours, IN 7, IN  vtDays[1], IN _T(","));
 			nsYLX::CUtil::ClearMemForSplit(vtDays,2);
 
-			//ct = CTime( 2013, 2,24,1,1,1);
-			int nTodayWeek = tmNow.GetDayOfWeek() - 1;
+            int nTodayWeek = tmNow->tm_wday-1;//tmNow.GetDayOfWeek() - 1;
 			int i=0;
 			for (  i=0;i<h;i++)
 			{
@@ -340,14 +356,6 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 
 		nsYLX::CUtil::ClearMemForSplit(vtHours,3);	
 
-		//ATLENSURE( nYear >= 1900 );
-		//ATLENSURE( nMonth >= 1 && nMonth <= 12 );
-		//ATLENSURE( nDay >= 1 && nDay <= 31 );
-		//ATLENSURE( nHour >= 0 && nHour <= 23 );
-		//ATLENSURE( nMin >= 0 && nMin <= 59 );
-		//ATLENSURE( nSec >= 0 && nSec <= 59 );
-		//ct = CTime( y,m,d,h,minu,sec);
-
 		struct tm atm;
 		atm.tm_sec = sec;
 		atm.tm_min = minu;
@@ -356,7 +364,7 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 		atm.tm_mon = m - 1;        // tm_mon is 0 based
 		atm.tm_year = y - 1900;     // tm_year is 1900 based
 		atm.tm_isdst = -1;
-
+#ifdef _WIN32
 		__time64_t _time = _mktime64(&atm);
 		ct = _time;
 
@@ -370,10 +378,14 @@ LONGLONG CTskTimerMgr::GetTimeEspase(class CParams* pTime)
 
 			}
 		}
+#else
+        time_t  _time = mktime (&atm);
+		llElapse = difftime (_time, now);  
+#endif
 	}//
 
 	nElapse = llElapse;//*1000;
-    #endif
+
 	return nElapse;
 } 
 
@@ -384,6 +396,7 @@ LONGLONG CTskTimerMgr::GetOffsetEspase(class CParams* pOffset)
 	{
 		return 0;
 	}
+    struct timeval *tv;
 #if 0
 	CTimeSpan ts;
 
